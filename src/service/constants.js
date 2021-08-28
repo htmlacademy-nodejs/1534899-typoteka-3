@@ -1,8 +1,8 @@
 "use strict";
 
-module.exports.USER_ARGV_INDEX = 2;
+const USER_ARGV_INDEX = 2;
 
-module.exports.TITLES = [
+const TITLES = [
   `Продам книги Стивена Кинга`,
   `Продам новую приставку Sony Playstation 5`,
   `Продам отличную подборку фильмов на VHS`,
@@ -14,7 +14,7 @@ module.exports.TITLES = [
   `Куплю детские санки`,
 ];
 
-module.exports.SENTENCES = [
+const SENTENCES = [
   `Товар в отличном состоянии.`,
   `Пользовались бережно и только по большим праздникам.`,
   `Продаю с болью в сердце...`,
@@ -33,7 +33,7 @@ module.exports.SENTENCES = [
   `Две страницы заляпаны свежим кофе`,
 ];
 
-module.exports.CATEGORIES = [
+const CATEGORIES = [
   `Книги`,
   `Разное`,
   `Посуда`,
@@ -42,22 +42,44 @@ module.exports.CATEGORIES = [
   `Журналы`,
 ];
 
-module.exports.SumRestrict = {
+const SumRestrict = {
   MIN: 1000,
   MAX: 100000,
 };
 
-module.exports.OfferType = {
+const OfferType = {
   OFFER: `offer`,
   SALE: `sale`,
 };
 
-module.exports.PictureRestrict = {
+const PictureRestrict = {
   MIN: 1,
   MAX: 16,
 };
 
-module.exports.DEFAULT_COUNT = 1;
-module.exports.FILE_NAME = `mocks.json`;
-module.exports.DEFAULT_COMMAND = `--help`;
+const DEFAULT_COUNT = 1;
+const FILE_NAME = `mocks.json`;
+const DEFAULT_COMMAND = `--help`;
+
+const COUNT = process.argv.slice(3);
+
+const EXIT_CODES = {
+  codeSuccess: 0,
+  codeFailure: 1,
+}
+
+module.exports = {
+  USER_ARGV_INDEX,
+  TITLES,
+  SENTENCES,
+  CATEGORIES,
+  SumRestrict,
+  OfferType,
+  PictureRestrict,
+  DEFAULT_COUNT,
+  FILE_NAME,
+  DEFAULT_COMMAND,
+  COUNT,
+  EXIT_CODES,
+};
 

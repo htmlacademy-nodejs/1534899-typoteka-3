@@ -9,6 +9,8 @@ const {
   DEFAULT_COUNT,
   FILE_NAME,
   PictureRestrict,
+  COUNT,
+  EXIT_CODES,
 } = require(`../constants`);
 const fs = require(`fs`);
 
@@ -37,20 +39,19 @@ const generateOffers = (count) =>
 module.exports = {
   name: `--generate`,
   run() {
-    const {argv} = process;
-    const count = argv.slice(3);
-    if (count > 1000) {
+    if (COUNT > 1000) {
       console.log(`Не больше 1000 объявлений!`);
-      process.exit(0);
+      process.exit(EXIT_CODES.codeSuccess);
     }
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    const countOffer = Number.parseInt(COUNT, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer));
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
-        return console.error(`Can't write data to file...`);
+        console.error(`Can't write data to file...`);
+        process.exit(EXIT_CODES.codeFailure);
       }
-
-      return console.info(`Operation success. File created.`);
+      console.info(`Operation success. File created.`);
+      process.exit(EXIT_CODES.codeSuccess);
     });
   },
 };
