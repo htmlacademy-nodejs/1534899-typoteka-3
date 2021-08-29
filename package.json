@@ -1,12 +1,16 @@
 {
   "name": "1534899-buy-and-sell-3",
   "version": "1.0.0",
-  "description": "«Куплю. Продам»",
+  "description": "Куплю.Продам.",
   "main": "./src/service/service.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "7.32.0",
+    "eslint-config-htmlacademy": "0.6.0"
+  },
   "scripts": {
     "test": "npm run eslint",
-    "eslint": "eslint --ext .js src/",
-    "start": "node ./src/service/service.js"
+    "eslint": "eslint --ext .js src/"
   },
   "repository": {
     "type": "git",
@@ -17,9 +21,5 @@
   "bugs": {
     "url": "https://github.com/StormWindRunner/1534899-buy-and-sell-3/issues"
   },
-  "homepage": "https://github.com/StormWindRunner/1534899-buy-and-sell-3#readme",
-  "devDependencies": {
-    "eslint": "7.32.0",
-    "eslint-config-htmlacademy": "0.6.0"
-  }
+  "homepage": "https://github.com/StormWindRunner/1534899-buy-and-sell-3#readme"
 }
