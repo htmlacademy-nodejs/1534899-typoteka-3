@@ -11,9 +11,10 @@ const {
   COUNT,
   EXIT_CODES,
 } = require(`../constants`);
+
 const fs = require(`fs`);
 
-const { getRandomInt, shuffle } = require(`../../utils`);
+const {getRandomInt, shuffle} = require(`../../utils`);
 
 const generateOffers = (count) =>
   Array(count)
@@ -45,3 +46,5 @@ module.exports = {
     });
   },
 };
+
+
