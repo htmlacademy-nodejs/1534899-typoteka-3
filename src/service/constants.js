@@ -66,7 +66,7 @@ const COUNT = process.argv.slice(3);
 const EXIT_CODES = {
   codeSuccess: 0,
   codeFailure: 1,
-}
+};
 
 module.exports = {
   USER_ARGV_INDEX,
