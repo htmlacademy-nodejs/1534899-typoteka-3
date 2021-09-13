@@ -9,11 +9,11 @@ mainRouter.get(`/`, (req, res) => {
 });
 
 mainRouter.get(`/register`, (req, res) => {
-  res.send(`/register`);
+  res.render(`errors/500`);
 });
 
 mainRouter.get(`/login`, (req, res) => {
-  res.send(`/login`);
+  res.render(`errors/404`);
 });
 
 mainRouter.get(`/search`, (req, res) => {
