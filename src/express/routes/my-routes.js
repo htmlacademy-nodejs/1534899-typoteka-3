@@ -16,12 +16,5 @@ myRouter.get(`/comments`, (req, res) => {
   // res.render(`errors/500`);
 });
 
-// myRouter.get(`/comments`, (req, res) => {
-  // res.send(`/my/comments`);
-  // res.render(`errors/404`);
-
-  // res.render(`errors/500`);
-// });
-
 module.exports = myRouter;
 
