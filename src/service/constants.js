@@ -4,6 +4,7 @@ const TITLES_PATH = `./data/titles.txt`;
 const ANNOUNCES_PATH = `./data/announces.txt`;
 const CATEGORIES_PATH = `./data/categories.txt`;
 const FULLTEXTS_PATH = `./data/fulltexts.txt`;
+const COMMENTS_PATH = `./data/comments.txt`;
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -38,12 +39,16 @@ const HttpCode = {
   UNAUTHORIZED: 401,
 };
 
+const MAX_ID_LENGTH = 6;
+const MAX_COMMENTS = 4;
+
 module.exports = {
   DEFAULT_PORT,
   TITLES_PATH,
   ANNOUNCES_PATH,
   CATEGORIES_PATH,
   FULLTEXTS_PATH,
+  COMMENTS_PATH,
   DATE,
   USER_ARGV_INDEX,
   DEFAULT_COUNT,
@@ -51,6 +56,8 @@ module.exports = {
   DEFAULT_COMMAND,
   COUNT,
   EXIT_CODES,
-  HttpCode
+  HttpCode,
+  MAX_ID_LENGTH,
+  MAX_COMMENTS,
 };
 
