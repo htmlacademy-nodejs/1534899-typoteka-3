@@ -2,7 +2,6 @@
 
 const chalk = require(`chalk`);
 const express = require(`express`);
-const fs = require(`fs`).promises;
 const {DEFAULT_PORT, HttpCode, COUNT, API_PREFIX} = require(`../constants`);
 const routes = require(`../api/index`);
 
