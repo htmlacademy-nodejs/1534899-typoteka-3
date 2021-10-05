@@ -1,5 +1,9 @@
 "use strict";
 
+const {nanoid} = require(`nanoid`);
+const {MAX_ID_LENGTH} = require(`../constants`);
+
+
 class ArticleService {
   constructor(offers) {
     this._offers = offers;
@@ -7,7 +11,7 @@ class ArticleService {
 
   findAll() {
     const articles = this._offers.reduce((acc, offer) => {
-      acc.add(offer.announce);
+      acc.add(offer);
       return acc;
     }, new Set());
 
@@ -18,6 +22,13 @@ class ArticleService {
     const article = this._offers.filter((item) => item.id === id);
     return article;
   }
+  create(offer) {
+    const newOffer = Object
+      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, offer);
+
+    this._offers.push(newOffer);
+    return newOffer;
+  }
 
   createOne({title, category, announce, fullText}) {
     let newArticle;
@@ -26,6 +37,15 @@ class ArticleService {
     newArticle.announce = announce;
     newArticle.fullText = fullText;
     return newArticle;
+  }
+
+  drop(id) {
+    const offer = this._offers.find((item) => item.id === id);
+    if (!offer) {
+      return null;
+    }
+    this._offers = this._offers.filter((item) => item.id !== id);
+    return offer;
   }
 
   uodateOne({id}) {

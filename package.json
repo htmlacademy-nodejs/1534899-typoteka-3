@@ -12,10 +12,13 @@
   "devDependencies": {
     "eslint": "7.32.0",
     "eslint-config-htmlacademy": "0.6.0",
-    "nodemon": "2.0.12"
+    "jest": "27.2.4",
+    "nodemon": "2.0.12",
+    "supertest": "6.1.6"
   },
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run jest && npm run eslint",
+    "jest": "jest",
     "eslint": "eslint --ext .js src/",
     "start": "nodemon ./src/service/service.js --server",
     "start-front-server": "nodemon ./src/express/express.js"

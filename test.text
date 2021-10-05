@@ -1,1 +1,10 @@
-GET http://localhost:3001/api/articles/kQVAhV/comments
+POST http://localhost:3001/api/articles HTTP/1.1
+content-type: application/json
+
+{
+  "title": "Hello",
+  "category": "Work",
+  "announce": "Get Ready",
+  "fullText": "What is up?",
+  "createdDate": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
