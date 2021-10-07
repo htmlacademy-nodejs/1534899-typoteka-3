@@ -2,10 +2,10 @@
 
 const express = require(`express`);
 const request = require(`supertest`);
-const {HttpCode} = require(`../constants`);
+const { HttpCode } = require(`../constants`);
 
-const categories = require(`./categories`);
-const CategoryService = require(`../data-service/category`);
+const search = require(`./search`);
+const SearchService = require(`../data-service/search`);
 
 const mockData = [
   {
@@ -122,27 +122,36 @@ const mockData = [
 
 const app = express();
 app.use(express.json());
-categories(app, new CategoryService(mockData));
+search(app, new SearchService(mockData));
 
-describe(`API returns categories list`, () => {
+describe(`API returns offer based on search query`, () => {
   let response;
 
   beforeAll(async () => {
-    response = await request(app).get(`/categories`);
+    response = await request(app)
+      .get(`/search`)
+      .query({
+        title: `Музыка`
+      });
   });
 
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-  test(`Returns list of 4 categories`, () =>
-    expect(response.body.length).toBe(4));
 
-  test(`Category names are "Рок — это протест.", "Учим HTML и CSS.", "Как достигнуть успеха не вставая с кресла.", "Как собрать камни бесконечности."`, () =>
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        "Рок — это протест.",
-        "Учим HTML и CSS.",
-        "Как достигнуть успеха не вставая с кресла.",
-        "Как собрать камни бесконечности.",
-      ])
-    ));
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`1 offer found`, () => expect(response.body.length).toBe(1));
+  test(`Article has correct id`, () => expect(response.body[0].id).toBe(`jfVZ0n`));
 });
 
+test(`API returns code 404 if nothing is found`,
+  () => request(app)
+    .get(`/search`)
+    .query({
+      title: `Продам свою душу`
+    })
+    .expect(HttpCode.NOT_FOUND)
+);
+
+test(`API returns 400 when query string is absent`,
+  () => request(app)
+    .get(`/search`)
+    .expect(HttpCode.BAD_REQUEST)
+);

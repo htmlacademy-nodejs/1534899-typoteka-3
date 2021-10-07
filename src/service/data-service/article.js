@@ -40,16 +40,20 @@ class ArticleService {
   }
 
   drop(id) {
-    const offer = this._offers.find((item) => item.id === id);
-    if (!offer) {
+    const article = this._offers.find((item) => item.id === id);
+    if (!article) {
       return null;
     }
     this._offers = this._offers.filter((item) => item.id !== id);
-    return offer;
+    return article;
   }
 
-  uodateOne({id}) {
+  updateOne(id, data) {
     const article = this._offers.filter((item) => item.id === id);
+    article[0].title = data.title;
+    article[0].category = data.category;
+    article[0].announce = data.announce;
+    article[0].fullText = data.fullText;
     return article;
   }
 

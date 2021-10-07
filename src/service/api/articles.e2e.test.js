@@ -126,9 +126,9 @@ const mockData = [
   },
 ];
 
-const app = express();
-app.use(express.json());
-articles(app, new ArticleService(mockData));
+// const app = express();
+// app.use(express.json());
+// articles(app, new ArticleService(mockData));
 
 const createAPI = () => {
   const app = express();
@@ -139,6 +139,7 @@ const createAPI = () => {
 };
 
 describe(`API returns articles list`, () => {
+  const app = createAPI();
   let response;
 
   beforeAll(async () => {
@@ -151,6 +152,8 @@ describe(`API returns articles list`, () => {
 });
 
 describe(`API returns one article with id`, () => {
+  const app = createAPI();
+
   let response;
 
   beforeAll(async () => {
@@ -158,8 +161,6 @@ describe(`API returns one article with id`, () => {
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-  // test(`Returns list of 5 articles`, () =>
-  //   expect(response.body.length).toBe(5));
 });
 
 describe(`API creates an article if data is valid`, () => {
@@ -214,11 +215,41 @@ describe(`API refuses to create an article if data is invalid`, () => {
   });
 });
 
+describe(`API changes existent article`, () => {
+  const newArticle = {
+    title: `Test1`,
+    category: `Погладь киску1`,
+    announce: `Here we go!1`,
+    fullText: `Something going on!1`
+  };
 
+  const app = createAPI();
 
-// test(`Should 400 because title property doesn't exist`, async () => {
-//   const res = await request(server)
-//     .post(`/api/books`)
-//     .send({name: `The Outsider`});
-//   expect(res.statusCode).toBe(400);
-// });
+  let response;
+
+  beforeAll(async () => {
+    response = await request(app)
+      .put(`/articles/FA_Mms`)
+      .send(newArticle);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Returns changed article`, () => expect(response.body[0]).toEqual(expect.objectContaining(newArticle)));
+
+  test(`Article is really changed`, () => request(app)
+    .get(`/articles/FA_Mms`)
+    .expect((res) => expect(res.body[0].title).toBe(`Test1`))
+  );
+});
+
+test(`API refuses to create a comment to non-existent article and returns status code 404`, () => {
+  const app = createAPI();
+
+  return request(app)
+    .post(`/articles/NOEXST/comments`)
+    .send({
+      text: `Неважно`
+    })
+    .expect(HttpCode.NOT_FOUND);
+});
