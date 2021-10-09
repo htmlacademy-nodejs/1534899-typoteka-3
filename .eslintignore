@@ -1,1 +1,4 @@
 **/public/js**
+**/api/**
+ignorePatterns:
+  '**/express/public/**/*.js'

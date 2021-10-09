@@ -6,9 +6,11 @@ class SearchService {
   }
 
   findAll(query) {
-    console.log(query);
+    const article = this._offers.filter((item) => item.title.includes(query));
+    return article;
   }
 
 }
 
 module.exports = SearchService;
+
