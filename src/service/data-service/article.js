@@ -5,13 +5,13 @@ const {MAX_ID_LENGTH} = require(`../constants`);
 
 
 class ArticleService {
-  constructor(offers) {
-    this._offers = offers;
+  constructor(articlesData) {
+    this._articlesData = articlesData;
   }
 
   findAll() {
-    const articles = this._offers.reduce((acc, offer) => {
-      acc.add(offer);
+    const articles = this._articlesData.reduce((acc, article) => {
+      acc.add(article);
       return acc;
     }, new Set());
 
@@ -19,15 +19,15 @@ class ArticleService {
   }
 
   getOne(id) {
-    const article = this._offers.filter((item) => item.id === id);
+    const article = this._articlesData.filter((item) => item.id === id);
     return article;
   }
-  create(offer) {
-    const newOffer = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, offer);
+  create(article) {
+    const newArticle = Object
+      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
 
-    this._offers.push(newOffer);
-    return newOffer;
+    this._articlesData.push(newArticle);
+    return newArticle;
   }
 
   createOne({title, category, announce, fullText}) {
@@ -40,25 +40,23 @@ class ArticleService {
   }
 
   drop(id) {
-    const article = this._offers.find((item) => item.id === id);
+    const article = this._articlesData.find((item) => item.id === id);
     if (!article) {
       return null;
     }
-    this._offers = this._offers.filter((item) => item.id !== id);
+    this._articlesData = this._articlesData.filter((item) => item.id !== id);
     return article;
   }
 
-  updateOne(id, data) {
-    const article = this._offers.filter((item) => item.id === id);
-    article[0].title = data.title;
-    article[0].category = data.category;
-    article[0].announce = data.announce;
-    article[0].fullText = data.fullText;
-    return article;
+  update(id, article) {
+    const oldArticle = this._articlesData
+      .find((item) => item.id === id);
+
+    return Object.assign(oldArticle, article);
   }
 
   findAllComments(id) {
-    const article = this._offers.filter((item) => item.id === id);
+    const article = this._articlesData.filter((item) => item.id === id);
     const comments = article[0].comments.reduce((acc, comment) => {
       acc.add(comment.text);
       return acc;

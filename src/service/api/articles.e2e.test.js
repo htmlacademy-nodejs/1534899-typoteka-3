@@ -5,7 +5,6 @@ const request = require(`supertest`);
 
 const articles = require(`./articles`);
 const ArticleService = require(`../data-service/article`);
-const CommentService = require(`../data-service/comment`);
 const {HttpCode} = require(`../constants`);
 
 const mockData = [
@@ -126,15 +125,11 @@ const mockData = [
   },
 ];
 
-// const app = express();
-// app.use(express.json());
-// articles(app, new ArticleService(mockData));
-
 const createAPI = () => {
   const app = express();
   const cloneData = JSON.parse(JSON.stringify(mockData));
   app.use(express.json());
-  articles(app, new ArticleService(cloneData), new CommentService());
+  articles(app, new ArticleService(cloneData));
   return app;
 };
 
@@ -220,7 +215,9 @@ describe(`API changes existent article`, () => {
     title: `Test1`,
     category: `Погладь киску1`,
     announce: `Here we go!1`,
-    fullText: `Something going on!1`
+    fullText: `Something going on!1`,
+    createdDate: ``,
+    comments:[],
   };
 
   const app = createAPI();
@@ -235,7 +232,7 @@ describe(`API changes existent article`, () => {
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns changed article`, () => expect(response.body[0]).toEqual(expect.objectContaining(newArticle)));
+  test(`Returns changed article`, () => expect(response.body).toEqual(expect.objectContaining(newArticle)));
 
   test(`Article is really changed`, () => request(app)
     .get(`/articles/FA_Mms`)

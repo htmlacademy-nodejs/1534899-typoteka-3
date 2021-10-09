@@ -4,13 +4,12 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const {
   ArticleService,
-  CommentService,
 } = require(`../data-service`);
 const articleValidator = require(`../middlewares/article-validator`);
 
-const route = new Router();
 
-module.exports = (app, ArticleService, CommentService) => {
+module.exports = (app, ArticleService) => {
+  const route = new Router();
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
@@ -49,7 +48,7 @@ module.exports = (app, ArticleService, CommentService) => {
   route.put(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
 
-    const article = await ArticleService.updateOne(articleId, req.body);
+    const article = await ArticleService.update(articleId, req.body);
 
     if (!article) {
       res.status(HttpCode.NOT_FOUND)
@@ -58,6 +57,8 @@ module.exports = (app, ArticleService, CommentService) => {
     res.status(HttpCode.OK)
     .json(article);
   });
+
+
 
   route.delete(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
@@ -74,7 +75,7 @@ module.exports = (app, ArticleService, CommentService) => {
 
   route.get(`/:articleId/comments`, async (req, res) => {
     const {articleId} = req.params;
-    const comments = await CommentService.findAllComments(articleId);
+    const comments = await ArticleService.findAllComments(articleId);
     if (!comments) {
       res.status(HttpCode.NOT_FOUND)
         .send(`Something going wrong with comments!`);
