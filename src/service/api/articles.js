@@ -13,7 +13,6 @@ module.exports = (app, ArticleService) => {
   app.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-
     const articles = await ArticleService.findAll();
 
     if (!articles) {
@@ -23,6 +22,18 @@ module.exports = (app, ArticleService) => {
 
     res.status(HttpCode.OK)
     .json(articles);
+  });
+
+  route.get(`/comments`, async (req, res) => {
+    const comments = await ArticleService.allComments();
+
+    if (!comments) {
+      res.status(HttpCode.NOT_FOUND)
+        .send(`Something going wrong with articles!`);
+    }
+
+    res.status(HttpCode.OK)
+    .json(comments);
   });
 
   route.get(`/:articleId`, async (req, res) => {
@@ -57,8 +68,6 @@ module.exports = (app, ArticleService) => {
     res.status(HttpCode.OK)
     .json(article);
   });
-
-
 
   route.delete(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;

@@ -17,9 +17,8 @@ class ArticleService {
 
     return [...articles];
   }
-
   getOne(id) {
-    const article = this._articlesData.filter((item) => item.id === id);
+    const article = this._articlesData.find((item) => item.id === id);
     return article;
   }
   create(article) {
@@ -62,6 +61,13 @@ class ArticleService {
       return acc;
     }, new Set());
     return [...comments];
+  }
+
+  allComments() {
+    const comments = this._articlesData.map((item) => {
+      return (item.comments);
+    }).flat();
+    return comments;
   }
 }
 

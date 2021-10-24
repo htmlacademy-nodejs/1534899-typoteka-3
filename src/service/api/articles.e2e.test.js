@@ -152,7 +152,7 @@ describe(`API returns one article with id`, () => {
   let response;
 
   beforeAll(async () => {
-    response = await request(app).get(`/articles/:articleId`);
+    response = await request(app).get(`/articles/FA_Mms`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -236,7 +236,7 @@ describe(`API changes existent article`, () => {
 
   test(`Article is really changed`, () => request(app)
     .get(`/articles/FA_Mms`)
-    .expect((res) => expect(res.body[0].title).toBe(`Test1`))
+    .expect((res) => expect(res.body.title).toBe(`Test1`))
   );
 });
 

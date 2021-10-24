@@ -16,3 +16,6 @@ build/
 
 # mocks
 mocks.json
+
+# Директория с медиа
+upload/
