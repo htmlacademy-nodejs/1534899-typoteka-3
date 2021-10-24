@@ -19,7 +19,7 @@ mainRouter.get(`/search`, async (req, res) => {
   try {
     const articles = await api.search(searchValue);
     res.render(`search`, {articles, searchValue});
-  } catch (e) {
+  } catch (err) {
     res.render(`search`, {articles: []});
   }
 });

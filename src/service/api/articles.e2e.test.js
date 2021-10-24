@@ -153,7 +153,6 @@ describe(`API returns one article with id`, () => {
 
   beforeAll(async () => {
     response = await request(app).get(`/articles/FA_Mms`);
-    console.log('>>>>', response.statusCode);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));

@@ -7,7 +7,6 @@ const pictureUpload = require(`../middleware/picture-upload`);
 const articlesRouter = new Router();
 
 articlesRouter.get(`/add`, (req, res) => {
-  console.log(1);
   res.render(`articles/post-new`, {articleData: {}});
 });
 

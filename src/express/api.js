@@ -2,16 +2,16 @@
 
 const axios = require(`axios`);
 
+const TIMEOUT = 1000;
+const PORT = 3000;
+const DEFAULT_URL = `http://localhost:${PORT}/api/`;
+
 class API {
   constructor(baseURL, timeout) {
     this._http = axios.create({
       baseURL,
       timeout
     });
-  }
-  async _load(url, options) {
-    const response = await this._http.request({url, ...options});
-    return response.data;
   }
 
   getArticles() {
@@ -29,7 +29,7 @@ class API {
     return this._load(`/articles/${id}`);
   }
 
-  async createArticle(data) {
+  createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
       data
@@ -39,14 +39,14 @@ class API {
   search(query) {
     return this._load(`/search`, {params: {query}});
   }
+
+  async _load(url, options) {
+    const response = await this._http.request({url, ...options});
+    return response.data;
+  }
 }
 
-const TIMEOUT = 1000;
-
-const port = 3000;
-const defaultUrl = `http://localhost:${port}/api/`;
-
-const defaultAPI = new API(defaultUrl, TIMEOUT);
+const defaultAPI = new API(DEFAULT_URL, TIMEOUT);
 
 module.exports = {
   API,
