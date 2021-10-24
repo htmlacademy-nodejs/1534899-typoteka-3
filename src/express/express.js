@@ -12,10 +12,11 @@ const app = express();
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
+const UPLOAD_DIR = `upload`;
 
-
-// console.log('PATH>>>', path.resolve(__dirname, PUBLIC_DIR));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+
+app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);
 app.use(`/articles`, articlesRouter);

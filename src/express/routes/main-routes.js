@@ -1,55 +1,27 @@
 'use strict';
 
 const {Router} = require(`express`);
+const api = require(`../api`).getAPI();
 
 const mainRouter = new Router();
 
-mainRouter.get(`/`, (req, res) => {
-  res.render(`main`);
+mainRouter.get(`/`, async (req, res) => {
+  const [articles, categories] = await Promise.all([
+    api.getArticles(),
+    api.getCategories()
+  ]);
+  res.render(`main`, {articles, categories});
 });
 
-mainRouter.get(`/register`, (req, res) => {
-  res.render(`signup`);
-});
+mainRouter.get(`/search`, async (req, res) => {
+  const {query: searchValue} = req.query;
 
-mainRouter.get(`/login`, (req, res) => {
-  res.render(`login`);
-});
-
-mainRouter.get(`/comments`, (req, res) => {
-  res.render(`comments`);
-});
-
-mainRouter.get(`/search`, (req, res) => {
-  res.render(`search-result`);
-});
-
-mainRouter.get(`/publications`, (req, res) => {
-  res.render(`publications`);
-});
-
-mainRouter.get(`/post`, (req, res) => {
-  res.render(`post`);
-});
-
-mainRouter.get(`/search`, (req, res) => {
-  res.send(`/search`);
-});
-
-mainRouter.get(`/my`, (req, res) => {
-  res.render(`my`);
-});
-
-mainRouter.get(`/categories`, (req, res) => {
-  res.render(`all-categories`);
-});
-
-mainRouter.get(`/public`, (req, res) => {
-  res.render(`articles-by-category`);
-});
-
-mainRouter.get(`/categories`, (req, res) => {
-  res.send(`/categories`);
+  try {
+    const articles = await api.search(searchValue);
+    res.render(`search`, {articles, searchValue});
+  } catch (e) {
+    res.render(`search`, {articles: []});
+  }
 });
 
 module.exports = mainRouter;

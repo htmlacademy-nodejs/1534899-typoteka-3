@@ -4,9 +4,11 @@
   "description": "«Типотека»",
   "main": "./src/service/service.js",
   "dependencies": {
+    "axios": "0.22.0",
     "chalk": "4.1.2",
     "cross-env": "7.0.3",
     "express": "4.17.1",
+    "multer": "^1.4.3",
     "nanoid": "3.1.25",
     "pino": "6.13.3",
     "pug": "3.0.2"
@@ -23,8 +25,8 @@
     "test": "npm run jest && npm run eslint",
     "jest": "jest",
     "eslint": "eslint --ext .js src/",
-    "start": "cross-env NODE_ENV=production node ./src/service/service.js --server",
-    "start::debug": "cross-env NODE_ENV=development node ./src/service/service.js --server", 
+    "start": "cross-env NODE_ENV=production nodemon ./src/service/service.js --server",
+    "start::debug": "cross-env NODE_ENV=development node ./src/service/service.js --server",
     "start-front-server": "nodemon ./src/express/express.js"
   },
   "repository": {
