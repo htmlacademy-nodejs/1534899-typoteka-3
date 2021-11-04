@@ -35,7 +35,9 @@ CREATE TABLE comments(
   text varchar(255) NOT NULL,
   created_at timestamp DEFAULT current_timestamp,
   user_id integer NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  article_id integer NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (article_id) REFERENCES articles(id)
 );
 
 CREATE TABLE articles_categories(
