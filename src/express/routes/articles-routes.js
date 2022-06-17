@@ -6,10 +6,6 @@ const pictureUpload = require(`../middleware/picture-upload`);
 
 const articlesRouter = new Router();
 
-articlesRouter.get(`/add`, (req, res) => {
-  res.render(`articles/post-new`, {articleData: {}});
-});
-
 articlesRouter.get(`/:id`, (req, res) => {
   res.send(`/articles//articles/:id`);
 });
@@ -19,10 +15,24 @@ articlesRouter.get(`/category/:id`, (req, res) => {
   res.send(`/articles/category/:id`);
 });
 
+// Добавление новой публикации ++
+articlesRouter.get(`/add`, (req, res) => {
+  res.render(`articles/post-new`, {articleData: {}});
+});
+
+
+// Редактирование публикации по id
 articlesRouter.get(`/edit/:id`, async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id);
-  res.render(`articles/post-edit`, {article});
+  let article;
+  let categories;
+  try {
+    article = await api.getArticle(id);
+    categories = await api.getCategories();
+    res.render(`../templates/articles/post-edit.pug`, {article, categories});
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 articlesRouter.post(`/add`, pictureUpload.single(`img`), async (req, res) => {

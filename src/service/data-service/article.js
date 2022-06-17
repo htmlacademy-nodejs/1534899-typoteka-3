@@ -2,28 +2,54 @@
 
 const {nanoid} = require(`nanoid`);
 const {MAX_ID_LENGTH} = require(`../constants`);
-
+const Aliase = require(`../models/aliase`);
 
 class ArticleService {
-  constructor(articlesData) {
-    this._articlesData = articlesData;
+  constructor(sequelize) {
+    this._Article = sequelize.models.Article;
+    this._ArticleCategory = sequelize.models.ArticleCategory;
+    this._Category = sequelize.models.Category;
+    this._User = sequelize.models.User;
+    this._Role = sequelize.models.Role;
+    this._Comment = sequelize.models.Comment;
+    this._ArticleCategory = sequelize.models.ArticleCategory;
+  }
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES, {model: this._Comment, as: Aliase.COMMENTS, include: [Aliase.USERS]}],
+      order: [
+        [`createdAt`, `DESC`]
+      ],
+      distinct: true
+    });
+    return {count, articles: rows};
+  }
+  async findAll() {
+    const include = [Aliase.CATEGORIES];
+    const article = await this._Article.findAll(
+        {
+          include,
+        });
+    return article.map((item) => item.get());
   }
 
-  findAll() {
-    const articles = this._articlesData.reduce((acc, article) => {
-      acc.add(article);
-      return acc;
-    }, new Set());
-
-    return [...articles];
-  }
-  getOne(id) {
-    const article = this._articlesData.find((item) => item.id === id);
+  async getOne(id) {
+    const article = await  this._Article.findOne( {
+      where: {id: `${id}`},
+      include: [{
+        association: Aliase.CATEGORIES,
+      }],
+    });
     return article;
   }
+
   create(article) {
-    const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
+    const newArticle = Object.assign(
+      { id: nanoid(MAX_ID_LENGTH), comments: [] },
+      article
+    );
 
     this._articlesData.push(newArticle);
     return newArticle;
@@ -48,8 +74,7 @@ class ArticleService {
   }
 
   update(id, article) {
-    const oldArticle = this._articlesData
-      .find((item) => item.id === id);
+    const oldArticle = this._articlesData.find((item) => item.id === id);
 
     return Object.assign(oldArticle, article);
   }
@@ -64,9 +89,11 @@ class ArticleService {
   }
 
   allComments() {
-    const comments = this._articlesData.map((item) => {
-      return (item.comments);
-    }).flat();
+    const comments = this._articlesData
+      .map((item) => {
+        return item.comments;
+      })
+      .flat();
     return comments;
   }
 }

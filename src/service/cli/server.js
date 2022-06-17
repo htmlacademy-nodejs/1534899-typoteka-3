@@ -6,7 +6,6 @@ const routes = require(`../api/index`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 const sequelize = require(`../lib/sequalize`);
-
 const app = express();
 app.use(express.json());
 
@@ -47,7 +46,7 @@ module.exports = {
         if (err) {
           return logger.error(`An error occurred on server creation: ${err.message}`);
         }
-        return logger.info(`Listening to connections on ${port}`);
+        return logger.info(`BLISTENListening to connections on ${port}`);
       });
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);

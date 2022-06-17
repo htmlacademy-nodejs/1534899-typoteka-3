@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
-const {DataTypes, Model} = require('sequelize');
+const {DataTypes, Model} = require(`sequelize`);
 
-class User extends Model {};
+class User extends Model {}
 
-const defineUser = (sequelize) => ({
+const defineUser = (sequelize) => User.init({
   firstName: {
     // eslint-disable-next-line new-cap
     type: DataTypes.STRING(255),
@@ -20,7 +20,7 @@ const defineUser = (sequelize) => ({
     // eslint-disable-next-line new-cap
     type: DataTypes. STRING(255),
     allowNull: false,
-    // UNIQUE
+    unique: true,
   },
   passwordHash: {
     // eslint-disable-next-line new-cap
@@ -33,8 +33,10 @@ const defineUser = (sequelize) => ({
     allowNull: false,
   },
 
-},{
+}, {
   sequelize,
+  timestamps: true,
+  paranoid: true,
   modelName: `User`,
   tableName: `users`,
 });

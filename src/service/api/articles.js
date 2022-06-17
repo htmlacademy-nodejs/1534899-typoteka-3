@@ -8,21 +8,49 @@ const {
 const articleValidator = require(`../middlewares/article-validator`);
 
 
-module.exports = (app, ArticleService) => {
+
+// module.exports = (app, service) => {
+//   const route = new Router();
+//   app.use(`/categories`, route);
+
+//   route.get(`/`, async (req, res) => {
+//     const categories = await service.findAll();
+//     console.log('Step 1 GET CATS', categories)
+
+//     if (!categories) {
+//       res.status(HttpCode.NOT_FOUND)
+//         .send(`Something going wrong with categories!`);
+//     }
+
+//     res.status(HttpCode.OK)
+//     .json(categories);
+//   });
+// };
+
+module.exports = (app, service) => {
   const route = new Router();
   app.use(`/articles`, route);
 
+  // route.get(`/`, async (req, res) => {
+  //   const articles = await service.findAll();
+
+  //   if (!articles) {
+  //     res.status(HttpCode.NOT_FOUND)
+  //       .send(`Something going wrong with articles!`);
+  //   }
+
+  //   res.status(HttpCode.OK)
+  //   .json(articles);
+  // });
+
   route.get(`/`, async (req, res) => {
-    const articles = await ArticleService.findAll();
+    let result;
 
-    if (!articles) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with articles!`);
-    }
-
-    res.status(HttpCode.OK)
-    .json(articles);
+    result = await service.findAll();
+    res.status(HttpCode.OK).json(result);
   });
+
+
 
   route.get(`/comments`, async (req, res) => {
     const comments = await ArticleService.allComments();
@@ -36,9 +64,11 @@ module.exports = (app, ArticleService) => {
     .json(comments);
   });
 
+  // GET ONE ARTICLE BY ID
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = await ArticleService.getOne(articleId);
+    const article = await service.getOne(articleId);
+    console.log('OUT ARTICLE>>>', article );
 
     if (!article) {
       res.status(HttpCode.NOT_FOUND)

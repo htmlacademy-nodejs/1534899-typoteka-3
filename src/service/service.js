@@ -3,6 +3,8 @@
 const {Cli} = require(`./cli`);
 const {USER_ARGV_INDEX, DEFAULT_COMMAND, EXIT_CODES} = require(`./constants`);
 
+console.log(process.env.DB_NAME);
+
 const userArguments = process.argv.slice(USER_ARGV_INDEX);
 const [userCommand] = userArguments;
 

@@ -5,6 +5,7 @@
   "main": "./src/service/service.js",
   "dependencies": {
     "axios": "0.22.0",
+    "body-parser": "^1.20.0",
     "chalk": "4.1.2",
     "cross-env": "7.0.3",
     "dotenv": "10.0.0",
@@ -29,8 +30,9 @@
     "jest": "jest",
     "eslint": "eslint --ext .js src/",
     "start": "cross-env NODE_ENV=production nodemon -r dotenv/config ./src/service/service.js --server",
+    "filldb": "node -r dotenv/config ./src/service/service.js --filldb",
     "start::debug": "cross-env NODE_ENV=development node -r dotenv/config ./src/service/service.js --server",
-    "start-front-server": "nodemon ./src/express/express.js"
+    "start-front-server": "nodemon -r dotenv/config ./src/express/express.js"
   },
   "repository": {
     "type": "git",

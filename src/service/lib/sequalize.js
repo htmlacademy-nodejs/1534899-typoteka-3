@@ -16,16 +16,16 @@ if (somethingIsNotDefined) {
   throw new Error(`One or more environmental variables are not defined`);
 }
 
-module.exports = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
-  host: DB_HOST,
-  port: DB_PORT,
-  // указываем, с какой СУБД предстоит работать
-  dialect: `postgres`,
-  // настройки пула соединений
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 10000,
-    idle: 10000,
-  },
-});
+module.exports = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,
+    {
+      host: DB_HOST,
+      port: DB_PORT,
+      dialect: `postgres`,
+      pool: {
+        max: 5,
+        min: 0,
+        acquire: 10000,
+        idle: 10000,
+      },
+    }
+);

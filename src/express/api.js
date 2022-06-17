@@ -21,6 +21,26 @@ class API {
   getCategories() {
     return this._load(`/categories`);
   }
+
+  addCategory(data) {
+    return this._load(`/categories/`, {
+      method: `POST`,
+      data: {data}
+    });
+  }
+  editCategory(data, id) {
+    return this._load(`/categories/${id}`, {
+      method: `PUT`,
+      data: {data}
+    });
+  }
+
+  deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
+      method: `DELETE`
+    });
+  }
+
   getComments() {
     return this._load(`/articles/comments`);
   }
@@ -31,6 +51,20 @@ class API {
 
   createArticle(data) {
     return this._load(`/articles`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  createUser(data) {
+    return this._load(`/user`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  auth(data) {
+    return this._load(`/user/auth`, {
       method: `POST`,
       data
     });

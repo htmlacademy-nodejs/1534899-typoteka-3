@@ -6,8 +6,21 @@ const api = require(`../api`).getAPI();
 const myRouter = new Router();
 
 myRouter.get(`/`, async (req, res) => {
-  const articles = await api.getArticles();
+  const articles = await api.getArticles({});
   res.render(`../templates/my.pug`, {articles});
+});
+
+myRouter.get(`/`, async (req, res) => {
+
+
+  // const articles = await api.getArticles({});
+  // res.render(`../templates/my.pug`, {articles});
+});
+
+myRouter.post(`/:id`, async (req, res) => {
+  console.log('Request params', req.params);
+  console.log('Request body', req.body);
+
 });
 
 myRouter.get(`/comments`, async (req, res) => {
