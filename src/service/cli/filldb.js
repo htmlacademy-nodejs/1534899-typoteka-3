@@ -43,13 +43,13 @@ const getRoles = async () => readContent(ROLES_PATH);
 const getCategories = async () => readContent(CATEGORIES_PATH);
 
 
-const getUsers = async () => [
+const getUsers = () => [
   {
     firstName: `Иван`,
     lastName: `Иванов`,
     email: `ivanov@example.com`,
     passwordHash: `ghfjgfjgfjgfjgh`,
-    avatar: `avatar01.png`,
+    avatar: `avatar-1.png`,
     roleId: 1,
   },
   {
@@ -57,7 +57,7 @@ const getUsers = async () => [
     lastName: `Петров`,
     email: `petrov@example.com`,
     passwordHash: `fdfdjfkdfjdkf`,
-    avatar: `avatar02.png`,
+    avatar: `avatar-2.png`,
     roleId: 2,
   },
   {
@@ -65,7 +65,7 @@ const getUsers = async () => [
     lastName: `Сидр`,
     email: `sidorov@example.com`,
     passwordHash: `afsfafasf`,
-    avatar: `avatar03.png`,
+    avatar: `avatar-3.png`,
     roleId: 3,
   },
 ];
@@ -111,25 +111,19 @@ module.exports = {
     const [count] = args;
     const countArticle = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    if (countArticle < 0) {
-      console.error(chalk.blue(`Указано отрицательное число !`));
-      process.exit(EXIT_CODES.codeFailure);
-    }
-
     if (countArticle > 1000) {
-      console.error(chalk.blue(`Не больше 1000 объявлений !`));
+      logger.error(chalk.blue(`Не больше 1000 объявлений !`));
       process.exit(EXIT_CODES.codeFailure);
     }
 
     const categoriesData = await getCategories();
-    const usersData = await getUsers();
     const rolesData = await getRoles();
+    const usersData = await getUsers();
 
     const articlesData = await generateArticles(countArticle, categoriesData);
 
-
     try {
-      logger.info(`Trying to connect to database...FILLDB`);
+      logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
       await initDB(sequelize, {articlesData, categoriesData, rolesData, usersData});
       process.exit(EXIT_CODES.codeSuccess);

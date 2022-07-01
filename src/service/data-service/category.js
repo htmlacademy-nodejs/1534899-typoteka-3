@@ -1,6 +1,7 @@
 "use strict";
 
 const Sequelize = require(`sequelize`);
+const Aliase = require(`../models/aliase`);
 
 class CategoryService {
   constructor(sequelize) {
@@ -8,9 +9,22 @@ class CategoryService {
     this._Article = sequelize.models.Article;
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
-  async findAll() {
-    const result = await this._Category.findAll({raw: true});
-    return result;
+  async findAll(needCount) {
+    if (needCount) {
+      const result = await this._Category.findAll({
+        attributes: [
+          `id`,
+          `name`,
+          [Sequelize.fn(`COUNT`, Sequelize.col(`articleCategories.CategoryId`)), `count`]
+        ],
+        group: [Sequelize.col(`Category.id`)],
+        include: [{
+          model: this._ArticleCategory, as: Aliase.ARTICLE_CATEGORIES, attributes: []
+        }]
+      });
+      return result.map((it) => it.get());
+    }
+    return this._Category.findAll({raw: true});
   }
 
   async create(categoryName) {
@@ -19,13 +33,14 @@ class CategoryService {
       if (checkingExistingCategory) {
         throw Error(`Such category is exist`);
       } else {
-        const categoryToCreate = {name: `${categoryName}`}
+        const categoryToCreate = {name: `${categoryName}`};
         const newCategory = await this._Category.create(categoryToCreate, {raw: true});
         return newCategory;
       }
     } catch (err) {
       console.log(err);
     }
+    return checkingExistingCategory;
   }
 
   async findOne(id, isCount) {
@@ -38,21 +53,19 @@ class CategoryService {
           [
             Sequelize.fn(
                 `COUNT`,
-                Sequelize.col(`id`)
+                Sequelize.col(`CategoryId`)
             ),
             `count`
           ]
         ],
         group: [Sequelize.col(`Category.id`)],
-        // include: [{
-          // association: `articles`,
-        //   model: this._ArticleCategory,
-        //   // as: Aliase.ARTICLE_CATEGORIES,
-        //   // attributes: []
-        // }],
+        include: [{
+          model: this._ArticleCategory,
+          as: Aliase.ARTICLE_CATEGORIES,
+          attributes: []
+        }],
         raw: true,
       });
-      console.log('RESULT', result);
       return result;
     }
     return this._Category.findByPk(id);

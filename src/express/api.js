@@ -14,43 +14,97 @@ class API {
     });
   }
 
-  getArticles() {
-    return this._load(`/articles`);
+  // Получение всех статей
+  getArticles(comments) {
+    return this._load(`/articles`, {params: {comments}});
   }
 
-  getCategories() {
-    return this._load(`/categories`);
+  // Получение всех популярных статей
+  getPopularArticles() {
+    return this._load(`/articles/popular`);
   }
 
+  // Получение последних комментариев
+  getLastComments() {
+    return this._load(`/articles/comments/last`);
+  }
+
+  // Поиск статей
+  search(query) {
+    return this._load(`/search`, {params: {query}});
+  }
+
+  // Получить категорию по ID
+  getCategory(id) {
+    return this._load(`/categories/${id}`);
+  }
+
+  // Создать новую категорию
   addCategory(data) {
     return this._load(`/categories/`, {
       method: `POST`,
       data: {data}
     });
   }
+
+  // Получить все категории
+  getCategories(count) {
+    return this._load(`/categories`, {params: {count}});
+  }
+  // Получить статью по одной категории
+  getArticlesByCategory({id}) {
+    return this._load(`/articles/category/${id}`);
+  }
+  // Получить статью по ID
+  getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
+  }
+  // Создать новую статью
+  createArticle(data) {
+    return this._load(`/articles`, {
+      method: `POST`,
+      data
+    });
+  }
+  // Отредактировать статью по ID
+  updateArticle(data, id) {
+    return this._load(`/articles/${id}`, {
+      method: `PUT`,
+      data
+    });
+  }
+  // Удалить статью
+  removeArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: `DELETE`,
+    });
+  }
+  // Удалить коммент
+  removeComments(id) {
+    return this._load(`/articles/comments/${id}`, {
+      method: `DELETE`,
+    });
+  }
+  // Редактировать категорию
   editCategory(data, id) {
     return this._load(`/categories/${id}`, {
       method: `PUT`,
       data: {data}
     });
   }
-
+  // Удалить категорию
   deleteCategory(id) {
     return this._load(`/categories/${id}`, {
       method: `DELETE`
     });
   }
-
+  // Получить все комменты
   getComments() {
     return this._load(`/articles/comments`);
   }
-
-  getArticle(id) {
-    return this._load(`/articles/${id}`);
-  }
-
-  createArticle(data) {
-    return this._load(`/articles`, {
+  // Создать комментарий
+  createComment(id, data) {
+    return this._load(`/articles/${id}/comments`, {
       method: `POST`,
       data
     });
@@ -68,10 +122,6 @@ class API {
       method: `POST`,
       data
     });
-  }
-
-  search(query) {
-    return this._load(`/search`, {params: {query}});
   }
 
   async _load(url, options) {

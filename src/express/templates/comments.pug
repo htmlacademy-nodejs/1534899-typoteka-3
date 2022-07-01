@@ -1,17 +1,26 @@
 extends layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main.main-page.main-page--padding
     section.main-page__publication.publication
       h1.publication__title Комментарии
       ul.publication__list
         each article in articles
-          li.publication__list-item
-            .publication__header
-              img.publication__list-image(src=article.picture ? `/img/${article.picture}` : '/img/avatar-1.png' width='20' height='20' alt='Аватар пользователя')
-              b.publication__list-name Максим Малахов
-              time.publication__item-time(datetime=`${article.createDate}`) #{article.createDate}
-            a.publication__item-text(href=`/articles/${article.id}`) #{article.title}
-            p.publication__text-strong #{article.announce}
-            button.publication__button.button.button--close-item(type='button')
-              span.visually-hidden Закрыть строку списка
+          each comment in article.comments
+            li.publication__list-item
+              .publication__header
+                img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+                b.publication__list-name #{comment.users.name} #{comment.users.surname}
+                time.publication__item-time(datetime=comment.createdAt) #{formatDate(comment.createdAt)}
+              a.publication__item-text(href='#')
+                | #{comment.text}
+              p.publication__text-strong
+                | #{article.title}
+              form(action=`/my/comments/${comment.id}` method='POST')
+                button.publication__button.button.button--close-item(type='submit')
+                  span.visually-hidden Удалить комментарий

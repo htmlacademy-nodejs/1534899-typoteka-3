@@ -1,19 +1,23 @@
 extends layout.pug
 
 block content
+  -
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
   main
     section.search-page
-      .search-page__wrapper
+      div(class=`search-page__wrapper${(!result.length && searchQuery) ? ' search-page__wrapper--empty' : ''}`)
         h1 Поиск
         .search.search-page__form
-          form(action='/search' method='get')
+          form(method='get')
             label
-              input(type='text' name='query' placeholder='Что ищем?')
+              input(type='text' name='search' placeholder='Что ищем?' value=`${searchQuery ? searchQuery : ''}`)
             button.search__button.button.button--transparent(type='submit') Найти
-          if articles && articles.length > 0
-            each article in articles
-              .search__result
-                time.search__date(datetime=article.createDate) #{article.createDate}
-                a.search__link(href=`/articles/${article.id}`) #{article.title}
-          if articles.length === 0
-            p.search-page__empty Ничего не нашлось
+          each article in result
+            .search__result
+              time.search__date(datetime=article.createdAt) #{formatDate(article.createdAt)}
+              a.search__link(href=`/articles/${article.id}`) #{article.title}
+        if (!result.length && searchQuery)
+          p.search-page__empty Ничего не нашлось

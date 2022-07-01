@@ -16,7 +16,7 @@ const define = (sequelize) => {
   const Article = defineArticle(sequelize);
   const Role = defineRole(sequelize);
   const User = defineUser(sequelize);
-  ArticleCategory.init({}, {sequelize, timestamps: false, modelName: Aliase.ARTICLE_CATEGORIES, tableName: `article_categories`});
+  ArticleCategory.init({}, {sequelize, timestamps: false, modelName: `ArticleCategory`, tableName: `article_categories`});
 
   Role.hasMany(User, {as: Aliase.USERS, foreignKey: `roleId`, onDelete: `cascade`});
   User.belongsTo(Role, {as: `roles`, foreignKey: `roleId`});

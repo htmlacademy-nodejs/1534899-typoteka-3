@@ -46,7 +46,7 @@ module.exports = {
         if (err) {
           return logger.error(`An error occurred on server creation: ${err.message}`);
         }
-        return logger.info(`BLISTENListening to connections on ${port}`);
+        return logger.info(`Listening to connections on ${port}`);
       });
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);

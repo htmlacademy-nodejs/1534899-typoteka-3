@@ -2,56 +2,124 @@
 
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
-const pictureUpload = require(`../middleware/picture-upload`);
+const upload = require(`../middleware/picture-upload`);
 
 const articlesRouter = new Router();
 
-articlesRouter.get(`/:id`, (req, res) => {
-  res.send(`/articles//articles/:id`);
+// С главной страницы выбираешь категорию
+articlesRouter.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
+
+  const [category, categories, {articles}] = await Promise.all([
+    api.getCategory(id),
+    api.getCategories(true),
+    api.getArticlesByCategory({id})
+  ]);
+
+  res.render(`articles-by-category`, {category, categories, articles});
 });
 
-
-articlesRouter.get(`/category/:id`, (req, res) => {
-  res.send(`/articles/category/:id`);
-});
+// С главной переход на статью по ID
+articlesRouter.get(`/:id`, async (req, res) => {
+  const {id} = req.params;
+  const article = await api.getArticle(id, true);
+  res.render(`post`, {article});
+}
+);
 
 // Добавление новой публикации ++
-articlesRouter.get(`/add`, (req, res) => {
-  res.render(`articles/post-new`, {articleData: {}});
+articlesRouter.get(`/add/new`, async (req, res, next) => {
+  try {
+    const categories = await api.getCategories();
+    res.render(`post-new`, {categories});
+  } catch (e) {
+    next(e);
+  }
 });
 
-
 // Редактирование публикации по id
-articlesRouter.get(`/edit/:id`, async (req, res) => {
+articlesRouter.get(`/edit/:id`, async (req, res, next) => {
   const {id} = req.params;
   let article;
   let categories;
   try {
-    article = await api.getArticle(id);
-    categories = await api.getCategories();
-    res.render(`../templates/articles/post-edit.pug`, {article, categories});
-  } catch (err) {
-    res.send(err);
+    [article, categories] = await Promise.all([
+      api.getArticle(id),
+      api.getCategories()
+    ]);
+  } catch (e) {
+    next(e);
   }
+  res.render(`post-edit`, {article, categories});
 });
 
-articlesRouter.post(`/add`, pictureUpload.single(`img`), async (req, res) => {
+// Пост новой статьи
+articlesRouter.post(`/add/new`, upload.single(`upload`), async (req, res, next) => {
   const {body, file} = req;
-
-  const articleData = {
-    title: body.title,
-    createDate: body.date,
-    category: [],
-    announce: body.announce,
-    picture: file ? file.filename : ``,
-    fullText: body.fullText
-  };
-
   try {
+    const articleData = {
+      title: body.title,
+      createDate: body.createdAt,
+      category: body.category,
+      announce: body.announce,
+      image: file ? file.filename : ``,
+      fullText: body.fullText
+    };
+
     await api.createArticle(articleData);
     res.redirect(`/my`);
   } catch (e) {
-    res.render(`articles/post-new`, {articleData});
+    try {
+      const categories = await api.getCategories();
+      res.render(`post-new`, {categories});
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
+// Редактирование статьи
+articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res, next) => {
+  const {id} = req.params;
+  const {body, file} = req;
+  let article;
+  let categories;
+
+  try {
+    const articleData = {
+      title: body.title,
+      createDate: body.createdAt,
+      category: body.category,
+      announce: body.announce,
+      image: file ? file.filename : ``,
+      fullText: body.fullText
+    };
+
+    await api.updateArticle(articleData, id);
+    res.redirect(`/my`);
+  } catch (e) {
+    try {
+      [article, categories] = await Promise.all([
+        api.getArticle(id),
+        api.getCategories()
+      ]);
+      res.render(`post-edit`, {article, categories});
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
+// Публикация комментария
+articlesRouter.post(`/:id/comments`, async (req, res) => {
+  const {id} = req.params;
+  const {message} = req.body;
+  try {
+    await api.createComment(id, {text: message, userId: 1});
+    res.redirect(`back`);
+  } catch (errors) {
+    const article = await api.getArticle(id, true);
+    res.render(`post`, {article});
   }
 });
 

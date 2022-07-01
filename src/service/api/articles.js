@@ -2,125 +2,94 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
-const {
-  ArticleService,
-} = require(`../data-service`);
-const articleValidator = require(`../middlewares/article-validator`);
-
-
-
-// module.exports = (app, service) => {
-//   const route = new Router();
-//   app.use(`/categories`, route);
-
-//   route.get(`/`, async (req, res) => {
-//     const categories = await service.findAll();
-//     console.log('Step 1 GET CATS', categories)
-
-//     if (!categories) {
-//       res.status(HttpCode.NOT_FOUND)
-//         .send(`Something going wrong with categories!`);
-//     }
-
-//     res.status(HttpCode.OK)
-//     .json(categories);
-//   });
-// };
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 module.exports = (app, service) => {
   const route = new Router();
   app.use(`/articles`, route);
-
-  // route.get(`/`, async (req, res) => {
-  //   const articles = await service.findAll();
-
-  //   if (!articles) {
-  //     res.status(HttpCode.NOT_FOUND)
-  //       .send(`Something going wrong with articles!`);
-  //   }
-
-  //   res.status(HttpCode.OK)
-  //   .json(articles);
-  // });
-
+ 
   route.get(`/`, async (req, res) => {
+    const {comments} = req.query;
     let result;
 
-    result = await service.findAll();
+    result = await service.findAll(comments);
     res.status(HttpCode.OK).json(result);
   });
 
-
-
-  route.get(`/comments`, async (req, res) => {
-    const comments = await ArticleService.allComments();
-
-    if (!comments) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with articles!`);
+  route.get(`/popular`, async (req, res) => {
+    const popularArticles = await service.popularArticles();
+    if (!popularArticles) {
+      logger.error(`Not found popular articles`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found popular articles`);
     }
-
-    res.status(HttpCode.OK)
-    .json(comments);
+    return res.status(HttpCode.OK)
+      .json(popularArticles);
   });
 
-  // GET ONE ARTICLE BY ID
+  route.get(`/category/:id`, async (req, res) => {
+    const {id} = req.params;
+
+    const {count, articles} = await service.findArticlesByCategory(id);
+
+    res.status(HttpCode.OK)
+      .json({
+        count,
+        articles
+      });
+  });
+
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = await service.getOne(articleId);
-    console.log('OUT ARTICLE>>>', article );
+    const {comments} = req.query;
+
+    const article = await service.findOne(articleId, comments);
 
     if (!article) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with article!`);
+      logger.error(`Not found with ${articleId}`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found with ${articleId}`);
     }
 
-    res.status(HttpCode.OK)
-    .json(article);
+    return res.status(HttpCode.OK)
+      .json(article);
   });
 
-  route.post(`/`, articleValidator, (req, res) => {
-    const article = ArticleService.create(req.body);
-  
+  route.post(`/`, async (req, res) => {
+    const article = await service.create(req.body);
+
     return res.status(HttpCode.CREATED)
       .json(article);
   });
 
   route.put(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
+    const existsArticle = await service.findOne(articleId);
 
-    const article = await ArticleService.update(articleId, req.body);
-
-    if (!article) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with updating article!`);
+    if (!existsArticle) {
+      logger.error(`Not found with ${articleId}`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found with ${articleId}`);
     }
-    res.status(HttpCode.OK)
-    .json(article);
+
+    const updatedArticle = await service.update(articleId, req.body);
+
+    return res.status(HttpCode.OK)
+      .json(updatedArticle);
   });
 
   route.delete(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
-    const article = await ArticleService.drop(articleId);
+    const article = await service.drop(articleId);
 
     if (!article) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with deleting article!`);
+      logger.error(`Not found`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found`);
     }
-
-    res.status(HttpCode.OK)
-    .json(article);
-  });
-
-  route.get(`/:articleId/comments`, async (req, res) => {
-    const {articleId} = req.params;
-    const comments = await ArticleService.findAllComments(articleId);
-    if (!comments) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with comments!`);
-    }
-    res.status(HttpCode.OK)
-    .json(comments);
+    return res.status(HttpCode.OK)
+      .json(article);
   });
 };
 

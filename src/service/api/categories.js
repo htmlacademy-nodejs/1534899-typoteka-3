@@ -2,20 +2,18 @@
 
 const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
-
+const {getLogger} = require(`../lib/logger`);
+const logger = getLogger({name: `api`});
 
 module.exports = (app, service) => {
   const route = new Router();
   app.use(`/categories`, route);
 
   route.get(`/`, async (req, res) => {
-    const categories = await service.findAll();
-    if (!categories) {
-      res.status(HttpCode.NOT_FOUND)
-        .send(`Something going wrong with categories!`);
-    }
+    const {count} = req.query;
+    const categories = await service.findAll(count);
     res.status(HttpCode.OK)
-    .json(categories);
+      .json(categories);
   });
 
   route.put(`/:categoryId`, async (req, res) => {
@@ -37,7 +35,6 @@ module.exports = (app, service) => {
   route.delete(`/:categoryId`, async (req, res) => {
     const {categoryId} = req.params;
 
-    console.log(`DELETE BACKEND`, categoryId)
     const category = await service.findOne(categoryId, true);
 
     if (category.count > 1) {
@@ -55,8 +52,6 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(deleted);
   });
 
-
-
   route.post(`/`, async (req, res) => {
     const categoryName = req.body.data;
     try {
@@ -67,4 +62,17 @@ module.exports = (app, service) => {
     }
   });
 
+  route.get(`/:categoryId`, async (req, res) => {
+    const {categoryId} = req.params;
+    const category = await service.findOne(categoryId);
+
+    if (!category) {
+      logger.error(`Not found with ${categoryId}`);
+      return res.status(HttpCode.NOT_FOUND)
+        .send(`Not found with ${categoryId}`);
+    }
+
+    return res.status(HttpCode.OK)
+      .json(category);
+  });
 };

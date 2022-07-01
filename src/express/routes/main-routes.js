@@ -40,7 +40,7 @@ mainRouter.post(`/categories/:id`, async (req, res) => {
 });
 
 // Регистрация нового пользователя
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
+mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
   const {body, file} = req;
 
   const userData = {
@@ -56,7 +56,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   res.redirect(`/login`);
 });
 
-// Логин пользователя --No BODY с формы
+// Логин пользователя
 mainRouter.post(`/login`, async (req, res) => {
   const {body} = req;
   const userData = {
@@ -76,26 +76,39 @@ mainRouter.get(`/register`, async (req, res) => {
   res.render(`../templates/authorization/signup.pug`);
 });
 
+// Главная страница, получение статей с комментариями и категориями
 mainRouter.get(`/`, async (req, res) => {
-  let categories;
-  let articles;
-  await Promise.all([
-    articles = await api.getArticles(),
-    categories = await api.getCategories()
+  const [
+    articles,
+    categories,
+    popularArticles,
+    lastComments
+  ] = await Promise.all([
+    api.getArticles(true),
+    api.getCategories(),
+    api.getPopularArticles(),
+    api.getLastComments()
   ]);
 
-  res.render(`main`, {articles, categories});
+  res.render(`main`, {articles, categories, popularArticles, lastComments});
 });
 
-mainRouter.get(`/search`, async (req, res) => {
-  const {query: searchValue} = req.query;
-
-  try {
-    const articles = await api.search(searchValue);
-    res.render(`search`, {articles, searchValue});
-  } catch (err) {
-    res.render(`search`, {articles: []});
+// Страница поиска
+mainRouter.get(`/search`, async (req, res, next) => {
+  let result = [];
+  if (req.query.search) {
+    try {
+      result = await api.search(req.query.search);
+    } catch (e) {
+      if (e.response.status !== 404) {
+        next(e);
+      }
+    }
   }
+  res.render(`search`, {
+    searchQuery: req.query.search,
+    result,
+  });
 });
 
 module.exports = mainRouter;

@@ -22,7 +22,7 @@ module.exports = (app, service) => {
       res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);
       return;
     }
-    console.log('USER', user);
+    
     res.status(HttpCode.OK).json(user);
   });
 };

@@ -5,6 +5,7 @@ const path = require(`path`);
 const {nanoid} = require(`nanoid`);
 
 const UPLOAD_DIR = `../upload/img/`;
+const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
 
 const uploadDirAbsolute = path.resolve(__dirname, UPLOAD_DIR);
 
@@ -17,5 +18,10 @@ const storage = multer.diskStorage({
   }
 });
 
-module.exports = multer({storage});
+const fileFilter = (req, file, cb) => {
+  cb(null, FILE_TYPES.includes(file.mimetype));
+};
 
+const upload = multer({storage, fileFilter});
+
+module.exports = upload;
