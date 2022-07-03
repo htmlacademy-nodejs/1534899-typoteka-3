@@ -212,13 +212,13 @@ describe(`API returns articles based on search query`, () => {
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-  test(`Two article found`, () => expect(response.body.length).toBe(2));
+  test(`Two articles found`, () => expect(response.body.length).toBe(2));
   test(`Article has correct id`, () => expect(response.body[0].id).toBe(5));
 });
 
 test(`API returns code 404 if nothing is found`, async () => {
   await request(app).get(`/search`).query({
-    query: `Продам свою душу`,
+    query: `Человек укусил пчелу`,
   }).expect(HttpCode.NOT_FOUND);
 });
 

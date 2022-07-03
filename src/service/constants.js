@@ -16,8 +16,8 @@ const DEFAULT_COMMAND = `--help`;
 const COUNT = process.argv.slice(3);
 
 const EXIT_CODES = {
-  codeSuccess: 0,
-  codeFailure: 1,
+  SUCCESS: 0,
+  FAILURE: 1,
 };
 
 const DATE = new Date().toLocaleDateString(undefined, {

@@ -15,7 +15,7 @@ mainRouter.get(`/categories`, async (req, res) => {
 mainRouter.post(`/categories`, async (req, res) => {
   const {'add-category': nameCategory} = req.body;
   try {
-    await api.addCategory(nameCategory);
+    await api.addCategory({name: nameCategory});
     res.redirect(`/categories`);
   } catch (err) {
     console.log(err);
@@ -28,7 +28,7 @@ mainRouter.post(`/categories/:id`, async (req, res) => {
   const {id} = req.params;
   try {
     if (action === `edit`) {
-      await api.editCategory(category, id);
+      await api.editCategory({name: category}, id);
     } else {
       await api.deleteCategory(id);
     }
@@ -69,11 +69,11 @@ mainRouter.post(`/login`, async (req, res) => {
 
 // Роуты для регистрации и логина
 mainRouter.get(`/login`, async (req, res) => {
-  res.render(`../templates/authorization/login.pug`);
+  res.render(`authorization/login`);
 });
 
 mainRouter.get(`/register`, async (req, res) => {
-  res.render(`../templates/authorization/signup.pug`);
+  res.render(`authorization/signup`);
 });
 
 // Главная страница, получение статей с комментариями и категориями

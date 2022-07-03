@@ -6,9 +6,8 @@ const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 const articleExist = require(`../middlewares/article-exists`);
 
-const route = new Router();
-
 module.exports = (app, articleService, commentService) => {
+  const route = new Router();
   app.use(`/articles`, route);
 
   route.post(`/:articleId/comments`, articleExist(articleService), async (req, res) => {

@@ -43,7 +43,7 @@ class API {
   addCategory(data) {
     return this._load(`/categories/`, {
       method: `POST`,
-      data: {data}
+      data
     });
   }
 
@@ -89,7 +89,7 @@ class API {
   editCategory(data, id) {
     return this._load(`/categories/${id}`, {
       method: `PUT`,
-      data: {data}
+      data
     });
   }
   // Удалить категорию

@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require(`express`);
-const {DEFAULT_PORT, HttpCode, COUNT, API_PREFIX} = require(`../constants`);
+const {DEFAULT_PORT, HttpCode, COUNT, API_PREFIX, EXIT_CODES} = require(`../constants`);
 const routes = require(`../api/index`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
@@ -42,15 +42,13 @@ module.exports = {
     try {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
-      app.listen(port, (err) => {
-        if (err) {
-          return logger.error(`An error occurred on server creation: ${err.message}`);
-        }
+      app.listen(port, () => {
         return logger.info(`Listening to connections on ${port}`);
       });
+
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);
-      process.exit(1);
+      process.exit(EXIT_CODES.FAILURE);
     }
     logger.info(`Connection to database established`);
   },

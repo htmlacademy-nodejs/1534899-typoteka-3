@@ -113,12 +113,12 @@ module.exports = {
 
     if (countArticle > 1000) {
       logger.error(chalk.blue(`Не больше 1000 объявлений !`));
-      process.exit(EXIT_CODES.codeFailure);
+      process.exit(EXIT_CODES.FAILURE);
     }
 
     const categoriesData = await getCategories();
     const rolesData = await getRoles();
-    const usersData = await getUsers();
+    const usersData = getUsers();
 
     const articlesData = await generateArticles(countArticle, categoriesData);
 
@@ -126,10 +126,10 @@ module.exports = {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
       await initDB(sequelize, {articlesData, categoriesData, rolesData, usersData});
-      process.exit(EXIT_CODES.codeSuccess);
+      process.exit(EXIT_CODES.SUCCESS);
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);
     }
-    logger.info(`Connection to database established in FILLDB`);
+    logger.info(`Connection to database established`);
   },
 };
