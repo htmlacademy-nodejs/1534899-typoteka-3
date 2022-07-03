@@ -18,7 +18,7 @@ module.exports = (app, service) => {
 
   route.put(`/:categoryId`, async (req, res) => {
     const {categoryId} = req.params;
-    const categoryName = req.body.data;
+    const categoryName = req.body.name;
 
     const category = await service.findOne(categoryId);
 
@@ -53,7 +53,7 @@ module.exports = (app, service) => {
   });
 
   route.post(`/`, async (req, res) => {
-    const categoryName = req.body.data;
+    const categoryName = req.body.name;
     try {
       const result = await service.create(categoryName);
       res.status(HttpCode.OK).json(result);

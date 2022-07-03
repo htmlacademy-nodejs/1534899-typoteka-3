@@ -37,6 +37,8 @@ const formatDate = (date) => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const asyncHandler = (fn) => (...args) => Promise.resolve(fn(...args)).catch(args[2]);
+
 module.exports = {
   getRandomInt,
   shuffle,
@@ -44,4 +46,5 @@ module.exports = {
   getRandomDate,
   addZero,
   formatDate,
+  asyncHandler,
 };

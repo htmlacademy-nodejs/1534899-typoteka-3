@@ -2,47 +2,35 @@
 
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
+const {asyncHandler} = require(`../../utils`);
 
 const myRouter = new Router();
 
 // Страница MY
-myRouter.get(`/`, async (req, res) => {
+myRouter.get(`/`, async (req, res, next) => {
   const articles = await api.getArticles({});
   res.render(`../templates/my.pug`, {articles});
 });
 
 // Получить все комментарии
-myRouter.get(`/comments`, async (req, res, next) => {
-  let articles = [];
-  try {
-    articles = await api.getArticles({comments: true});
-  } catch (e) {
-    next(e);
-  }
+myRouter.get(`/comments`, asyncHandler(async (req, res, next) => {
+  let articles = await api.getArticles({comments: true});
   res.render(`comments`, {articles});
-});
+}));
 
 // Удаление статьи
-myRouter.post(`/:id`, async (req, res, next) => {
+myRouter.post(`/:id`, asyncHandler((req, res, next) => {
   const {id} = req.params;
-  try {
-    await api.removeArticle(id);
-  } catch (e) {
-    next(e);
-  }
+  api.removeArticle(id);
   res.redirect(`/my`);
-});
+}));
 
 // Удаление коммента
-myRouter.post(`/comments/:id`, async (req, res, next) => {
+myRouter.post(`/comments/:id`, asyncHandler(async (req, res, next) => {
   const {id} = req.params;
-  try {
-    await api.removeComments(id);
-  } catch (e) {
-    next(e);
-  }
+  await api.removeComments(id);
   res.redirect(`/my/comments`);
-});
+}));
 
 module.exports = myRouter;
 
