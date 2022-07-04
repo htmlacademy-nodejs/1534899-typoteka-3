@@ -126,10 +126,8 @@ module.exports = {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
       await initDB(sequelize, {articlesData, categoriesData, rolesData, usersData});
-      process.exit(EXIT_CODES.SUCCESS);
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);
     }
-    logger.info(`Connection to database established`);
   },
 };

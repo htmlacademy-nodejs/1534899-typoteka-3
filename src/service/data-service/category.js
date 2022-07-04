@@ -29,18 +29,18 @@ class CategoryService {
 
   async create(categoryName) {
     const checkingExistingCategory = await this._Category.findOne({where: {name: `${categoryName}`}});
+    let newCategory;
     try {
       if (checkingExistingCategory) {
-        throw Error(`Such category is exist`);
+        return newCategory;
       } else {
         const categoryToCreate = {name: `${categoryName}`};
-        const newCategory = await this._Category.create(categoryToCreate, {raw: true});
-        return newCategory;
+        newCategory = await this._Category.create(categoryToCreate, {raw: true});
       }
     } catch (err) {
       console.log(err);
     }
-    return checkingExistingCategory;
+    return newCategory;
   }
 
   async findOne(id, isCount) {
