@@ -50,6 +50,5 @@ module.exports = {
       logger.error(`An error occurred: ${err.message}`);
       process.exit(EXIT_CODES.FAILURE);
     }
-    logger.info(`Connection to database established`);
   },
 };

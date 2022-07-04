@@ -15,8 +15,13 @@ mainRouter.get(`/categories`, async (req, res) => {
 mainRouter.post(`/categories`, async (req, res) => {
   const {'add-category': nameCategory} = req.body;
   try {
-    await api.addCategory({name: nameCategory});
-    res.redirect(`/categories`);
+    const result = await api.addCategory({name: nameCategory});
+    if (result) {
+      res.redirect(`/categories`);
+    } else {
+      const categories = await api.getCategories();
+      res.render(`all-categories`, {categories});
+    }
   } catch (err) {
     console.log(err);
   }
