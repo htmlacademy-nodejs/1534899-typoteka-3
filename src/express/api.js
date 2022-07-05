@@ -15,8 +15,8 @@ class API {
   }
 
   // Получение всех статей
-  getArticles(comments) {
-    return this._load(`/articles`, {params: {comments}});
+  getArticles(limit, offset, comments) {
+    return this._load(`/articles`, {params: {limit, offset, comments}});
   }
 
   // Получение всех популярных статей

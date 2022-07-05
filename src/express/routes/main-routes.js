@@ -5,6 +5,8 @@ const api = require(`../api`).getAPI();
 const upload = require(`../middleware/picture-upload`);
 const mainRouter = new Router();
 
+const ARTICLES_PER_PAGE = 8;
+
 // Все категории GET
 mainRouter.get(`/categories`, async (req, res) => {
   const categories = await api.getCategories();
@@ -83,19 +85,27 @@ mainRouter.get(`/register`, async (req, res) => {
 
 // Главная страница, получение статей с комментариями и категориями
 mainRouter.get(`/`, async (req, res) => {
+  let {page = 1} = req.query;
+  page = +page;
+
+  const limit = ARTICLES_PER_PAGE;
+  const offset = (page - 1) * ARTICLES_PER_PAGE;
+
   const [
-    articles,
+    {count, articles},
     categories,
     popularArticles,
     lastComments
   ] = await Promise.all([
-    api.getArticles(true),
+    api.getArticles(limit, offset, true),
     api.getCategories(),
     api.getPopularArticles(),
     api.getLastComments()
   ]);
 
-  res.render(`main`, {articles, categories, popularArticles, lastComments});
+  const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
+
+  res.render(`main`, {articles, categories, popularArticles, lastComments, page, totalPages});
 });
 
 // Страница поиска
