@@ -4,6 +4,8 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
+const articleValidator = require(`../middlewares/article-validator`);
+const RouteParamsValidator = require(`../middlewares/route-params-validator`);
 
 module.exports = (app, service) => {
   const route = new Router();
@@ -32,7 +34,7 @@ module.exports = (app, service) => {
       .json(popularArticles);
   });
 
-  route.get(`/category/:id`, async (req, res) => {
+  route.get(`/category/:id`, RouteParamsValidator, async (req, res) => {
     const {id} = req.params;
 
     const {count, articles} = await service.findArticlesByCategory(id);
@@ -48,26 +50,26 @@ module.exports = (app, service) => {
     const {articleId} = req.params;
     const {comments} = req.query;
 
-    const article = await service.findOne(articleId, comments);
+    const article = await service.findOne(articleId, Boolean(comments));
+
 
     if (!article) {
       logger.error(`Not found with ${articleId}`);
       return res.status(HttpCode.NOT_FOUND)
         .send(`Not found with ${articleId}`);
     }
-
     return res.status(HttpCode.OK)
       .json(article);
   });
 
-  route.post(`/`, async (req, res) => {
+  route.post(`/`, articleValidator, async (req, res) => {
     const article = await service.create(req.body);
 
     return res.status(HttpCode.CREATED)
       .json(article);
   });
 
-  route.put(`/:articleId`, async (req, res) => {
+  route.put(`/:articleId`, [articleValidator, RouteParamsValidator], async (req, res) => {
     const {articleId} = req.params;
     const existsArticle = await service.findOne(articleId);
 
@@ -83,7 +85,7 @@ module.exports = (app, service) => {
       .json(updatedArticle);
   });
 
-  route.delete(`/:articleId`, async (req, res) => {
+  route.delete(`/:articleId`, RouteParamsValidator, async (req, res) => {
     const {articleId} = req.params;
     const article = await service.drop(articleId);
 

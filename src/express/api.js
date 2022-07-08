@@ -15,7 +15,7 @@ class API {
   }
 
   // Получение всех статей
-  getArticles(limit, offset, comments) {
+  getArticles({limit, offset, comments}) {
     return this._load(`/articles`, {params: {limit, offset, comments}});
   }
 
@@ -56,8 +56,8 @@ class API {
     return this._load(`/articles/category/${id}`);
   }
   // Получить статью по ID
-  getArticle(id, comments) {
-    return this._load(`/articles/${id}`, {params: {comments}});
+  getArticle(id, {comments}) {
+    return this._load(`/articles/${id}`, {params: {comments: false}});
   }
   // Создать новую статью
   createArticle(data) {

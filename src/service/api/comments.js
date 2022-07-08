@@ -5,15 +5,16 @@ const {HttpCode} = require(`../constants`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 const articleExist = require(`../middlewares/article-exists`);
+const commentValidator = require(`../middlewares/comment-validator`);
+const RouteParamsValidator = require(`../middlewares/route-params-validator`);
 
 module.exports = (app, articleService, commentService) => {
   const route = new Router();
   app.use(`/articles`, route);
 
-  route.post(`/:articleId/comments`, articleExist(articleService), async (req, res) => {
+  route.post(`/:articleId/comments`, [articleExist(articleService), commentValidator], async (req, res) => {
     const {article} = res.locals;
     const comment = await commentService.create(article.id, req.body);
-
     return res.status(HttpCode.CREATED)
       .json(comment);
   });
@@ -24,7 +25,7 @@ module.exports = (app, articleService, commentService) => {
       .json(comments);
   });
 
-  route.delete(`/comments/:commentId`, async (req, res) => {
+  route.delete(`/comments/:commentId`, RouteParamsValidator, async (req, res) => {
     const {commentId} = req.params;
     const deletedComment = await commentService.drop(commentId);
 

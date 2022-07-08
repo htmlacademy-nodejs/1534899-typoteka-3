@@ -8,8 +8,8 @@ const myRouter = new Router();
 
 // Страница MY
 myRouter.get(`/`, async (req, res, next) => {
-  const articles = await api.getArticles({});
-  res.render(`../templates/my.pug`, {articles});
+  const articles = await api.getArticles({comments: false});
+  res.render(`my`, {articles});
 });
 
 // Получить все комментарии

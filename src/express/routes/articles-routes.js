@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middleware/picture-upload`);
+const {prepareErrors} = require(`../../utils`);
 
 const articlesRouter = new Router();
 
@@ -22,7 +23,7 @@ articlesRouter.get(`/category/:id`, async (req, res) => {
 // С главной переход на статью по ID
 articlesRouter.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id, true);
+  const article = await api.getArticle(id, {comments: true});
   res.render(`post`, {article});
 }
 );
@@ -37,7 +38,7 @@ articlesRouter.get(`/add/new`, async (req, res, next) => {
   }
 });
 
-// Редактирование публикации по id
+// Получение публикации по id
 articlesRouter.get(`/edit/:id`, async (req, res, next) => {
   const {id} = req.params;
   let article;
@@ -58,20 +59,27 @@ articlesRouter.post(`/add/new`, upload.single(`upload`), async (req, res, next) 
   const {body, file} = req;
   try {
     const articleData = {
+      userId: 1,
       title: body.title,
       createDate: body.createdAt,
-      category: body.category,
+      categories: body.category,
       announce: body.announce,
       image: file ? file.filename : ``,
       fullText: body.fullText
     };
+    const result = await api.createArticle(articleData);
 
-    await api.createArticle(articleData);
-    res.redirect(`/my`);
-  } catch (e) {
-    try {
+    if (result) {
+      res.redirect(`/my`);
+    } else {
       const categories = await api.getCategories();
       res.render(`post-new`, {categories});
+    }
+  } catch (e) {
+    const validationMessages = prepareErrors(e);
+    try {
+      const categories = await api.getCategories();
+      res.render(`post-new`, {categories, validationMessages});
     } catch (err) {
       next(err);
     }
@@ -87,9 +95,10 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res, next)
 
   try {
     const articleData = {
+      userId: 1,
       title: body.title,
       createDate: body.createdAt,
-      category: body.category,
+      categories: body.category,
       announce: body.announce,
       image: file ? file.filename : ``,
       fullText: body.fullText
@@ -99,11 +108,12 @@ articlesRouter.post(`/edit/:id`, upload.single(`upload`), async (req, res, next)
     res.redirect(`/my`);
   } catch (e) {
     try {
+      const validationMessages = prepareErrors(e);
       [article, categories] = await Promise.all([
         api.getArticle(id),
         api.getCategories()
       ]);
-      res.render(`post-edit`, {article, categories});
+      res.render(`post-edit`, {article, categories, validationMessages});
     } catch (err) {
       next(err);
     }
@@ -115,11 +125,14 @@ articlesRouter.post(`/:id/comments`, async (req, res) => {
   const {id} = req.params;
   const {message} = req.body;
   try {
-    await api.createComment(id, {text: message, userId: 1});
-    res.redirect(`back`);
+    const result = await api.createComment(id, {text: message, userId: 1});
+    if (result) {
+      res.redirect(`/articles/${id}`);
+    }
   } catch (errors) {
-    const article = await api.getArticle(id, true);
-    res.render(`post`, {article});
+    const validationMessages = prepareErrors(errors);
+    const article = await api.getArticle(id, {comments: true});
+    res.render(`post`, {article, validationMessages});
   }
 });
 

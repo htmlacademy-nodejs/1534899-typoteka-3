@@ -100,6 +100,7 @@ class ArticleService {
   }
 
   async findOne(id, needComments) {
+    let article;
     const include = [Aliase.CATEGORIES];
     if (needComments) {
       include.push({
@@ -115,12 +116,20 @@ class ArticleService {
           }
         ]
       });
+      article = this._Article.findByPk(id, {
+        include,
+        order: needComments ? [
+          [Aliase.COMMENTS, `createdAt`, `DESC`]
+        ] : []});
+    } else {
+      article = await this._Article.findOne({
+        where: {id: `${id}`},
+        include: [{
+          association: Aliase.CATEGORIES,
+        }],
+      });
     }
-    return this._Article.findByPk(id, {
-      include,
-      order: needComments ? [
-        [Aliase.COMMENTS, `createdAt`, `DESC`]
-      ] : []});
+    return article;
   }
 
   async create(articleData) {

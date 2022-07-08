@@ -4,6 +4,8 @@ const {Router} = require(`express`);
 const {HttpCode} = require(`../constants`);
 const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
+const RouteParamsValidator = require(`../middlewares/route-params-validator`);
+const categoryValidator = require(`../middlewares/category-validator`);
 
 module.exports = (app, service) => {
   const route = new Router();
@@ -16,7 +18,7 @@ module.exports = (app, service) => {
       .json(categories);
   });
 
-  route.put(`/:categoryId`, async (req, res) => {
+  route.put(`/:categoryId`, RouteParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
     const categoryName = req.body.name;
 
@@ -32,7 +34,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(updated);
   });
 
-  route.delete(`/:categoryId`, async (req, res) => {
+  route.delete(`/:categoryId`, RouteParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
 
     const category = await service.findOne(categoryId, true);
@@ -52,7 +54,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(deleted);
   });
 
-  route.post(`/`, async (req, res) => {
+  route.post(`/`, categoryValidator, async (req, res) => {
     const categoryName = req.body.name;
     try {
       const result = await service.create(categoryName);
@@ -62,7 +64,7 @@ module.exports = (app, service) => {
     }
   });
 
-  route.get(`/:categoryId`, async (req, res) => {
+  route.get(`/:categoryId`, RouteParamsValidator, async (req, res) => {
     const {categoryId} = req.params;
     const category = await service.findOne(categoryId);
 

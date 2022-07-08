@@ -37,6 +37,29 @@ style.
     pointer-events: none;
   }
 
+style.
+  .server-error-wrap {
+    color: white;
+    background-color: tomato;
+    border-radius: 10px;
+    margin: 20px 0 0;
+  }
+  .server-error-item {
+    padding: 10px;
+  }
+
+mixin insertErrorMessage(messages)
+  if messages
+    .server-error-wrap
+      each message in messages
+        .server-error-item= message
+
+mixin commentErrorMessage(messages)
+  if messages
+    each message in messages
+      p.comments__error= message
+
+
 doctype html
 html(lang='ru')
   head

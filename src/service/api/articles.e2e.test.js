@@ -208,3 +208,29 @@ describe(`API returns all articles`, () => {
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
   test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
 });
+
+test(`When field type is wrong response code is 400`, async () => {
+  const newArticle = {
+    createdDate: `2022-07-07`,
+    title: `Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности`,
+    photo: ``,
+    upload: ``,
+    announce: `Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности`,
+    fullText: `Как собрать камни бесконечности, Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности.Как собрать камни бесконечности.`,
+    categories: [`5`, `2`, `3`, `4`],
+    userId: 1
+  };
+  const app = await createAPI();
+
+  const badArticles = [
+    {...newArticle, announce: true},
+    {...newArticle, title: `title`},
+    {...newArticle, categories: []}
+  ];
+  for (const badArticle of badArticles) {
+    await request(app)
+      .post(`/articles`)
+      .send(badArticle)
+      .expect(HttpCode.BAD_REQUEST);
+  }
+});

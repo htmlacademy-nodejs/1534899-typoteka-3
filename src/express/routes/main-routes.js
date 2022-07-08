@@ -4,6 +4,7 @@ const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middleware/picture-upload`);
 const mainRouter = new Router();
+const {prepareErrors} = require(`../../utils`);
 
 const ARTICLES_PER_PAGE = 8;
 
@@ -25,7 +26,9 @@ mainRouter.post(`/categories`, async (req, res) => {
       res.render(`all-categories`, {categories});
     }
   } catch (err) {
-    console.log(err);
+    const categories = await api.getCategories();
+    const validationMessages = prepareErrors(err);
+    res.render(`all-categories`, {categories, validationMessages});
   }
 });
 
@@ -97,7 +100,7 @@ mainRouter.get(`/`, async (req, res) => {
     popularArticles,
     lastComments
   ] = await Promise.all([
-    api.getArticles(limit, offset, true),
+    api.getArticles({limit, offset, comments: true}),
     api.getCategories(),
     api.getPopularArticles(),
     api.getLastComments()
