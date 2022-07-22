@@ -12,9 +12,18 @@ class ArticleService {
     this._Comment = sequelize.models.Comment;
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
-
+  /////+++++
   async findAll(needComments) {
-    const include = [Aliase.CATEGORIES];
+    const include = [
+      Aliase.CATEGORIES,
+      {
+        model: this._User,
+        as: Aliase.USERS,
+        attributes: {
+          exclude: [`passwordHash`]
+        }
+      }
+    ];
     const orderArr = [
       [`createdAt`, `DESC`]
     ];
@@ -30,6 +39,7 @@ class ArticleService {
     return article.map((item) => item.get());
   }
 
+  /////+++++
   async findPage({limit, offset}) {
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
@@ -42,7 +52,7 @@ class ArticleService {
     });
     return {count, articles: rows};
   }
-
+  /////+++++
   async popularArticles() {
     const options = {
       subQuery: false,
@@ -70,7 +80,7 @@ class ArticleService {
     const popularActicles = await this._Article.findAll(options);
     return popularActicles.map((item) => item.get());
   }
-
+  /////-----
   async findArticlesByCategory(categoryId) {
     const articlesIdByCategory = await this._ArticleCategory.findAll({
       attributes: [`ArticleId`],

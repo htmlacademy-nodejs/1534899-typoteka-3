@@ -49,21 +49,39 @@ mainRouter.post(`/categories/:id`, async (req, res) => {
   }
 });
 
-// Регистрация нового пользователя
-mainRouter.post(`/register`, upload.single(`upload`), async (req, res) => {
+//*************************/ Регистрация нового пользователя /**********************************//
+
+mainRouter.get(`/register`, async (req, res) => {
+  res.render(`authorization/signup`);
+});
+
+mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
 
   const userData = {
     avatar: file ? file.filename : ``,
-    firstName: body[`name`],
-    lastName: body[`surname`],
+    firstName: body[`firstname`],
+    lastName: body[`lastname`],
     email: body[`email`],
     password: body[`password`],
     passwordRepeated: body[`repeat-password`]
   };
 
-  await api.createUser(userData);
-  res.redirect(`/login`);
+  try {
+    const result = await api.createUser(userData);;
+    res.redirect(`/login`);
+  } catch (errors) {
+    
+    const validationMessages = prepareErrors(errors);
+    res.render(`authorization/signup`, {validationMessages});
+  }
+});
+
+//*************************/ Логин пользователя /**********************************//
+
+// Роуты для регистрации и логина
+mainRouter.get(`/login`, async (req, res) => {
+  res.render(`authorization/login`);
 });
 
 // Логин пользователя
@@ -75,15 +93,6 @@ mainRouter.post(`/login`, async (req, res) => {
   };
   await api.auth(userData);
   res.redirect(`/`);
-});
-
-// Роуты для регистрации и логина
-mainRouter.get(`/login`, async (req, res) => {
-  res.render(`authorization/login`);
-});
-
-mainRouter.get(`/register`, async (req, res) => {
-  res.render(`authorization/signup`);
 });
 
 // Главная страница, получение статей с комментариями и категориями

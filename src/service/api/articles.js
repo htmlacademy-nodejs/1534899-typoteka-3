@@ -34,9 +34,8 @@ module.exports = (app, service) => {
       .json(popularArticles);
   });
 
-  route.get(`/category/:id`, RouteParamsValidator, async (req, res) => {
+  route.get(`/category/:id`, async (req, res) => {
     const {id} = req.params;
-
     const {count, articles} = await service.findArticlesByCategory(id);
 
     res.status(HttpCode.OK)
