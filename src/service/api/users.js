@@ -32,8 +32,15 @@ module.exports = (app, service) => {
       res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.EMAIL);
       return;
     }
+
+    const passwordIsCorrect = await passwordUtils.compare(password, user.passwordHash);
     
-    res.status(HttpCode.OK).json(user);
+    if (passwordIsCorrect) {
+      delete user.passwordHash;
+      res.status(HttpCode.OK).json(user);
+    } else {
+      res.status(HttpCode.UNAUTHORIZED).send(ErrorAuthMessage.PASSWORD);
+    }
   });
 };
 

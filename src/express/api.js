@@ -118,6 +118,8 @@ class API {
   }
 
   auth(data) {
+    console.log('>>>>data', data);
+
     return this._load(`/user/auth`, {
       method: `POST`,
       data
