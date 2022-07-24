@@ -67,7 +67,6 @@ mixin commentErrorMessage(messages)
     each message in messages
       p.comments__error= message
 
-
 doctype html
 html(lang='ru')
   head
@@ -81,9 +80,12 @@ html(lang='ru')
     link(rel='preload' href='/fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='/css/style.min.css')
   body
-    .wrapper-color 
-      include partials/header.pug
-      block content
-      include partials/footer.pug
-      script(src='/js/vendor.js')
-      script(src='/js/main.js')
+    div(class = colorWrap ? 'wrapper-color' : 'wrapper')
+        if user
+          include partials/header-user.pug
+        else
+          include partials/header.pug
+        block content
+        include partials/footer.pug
+  script(src='/js/vendor.js')
+  script(src='/js/main.js')
