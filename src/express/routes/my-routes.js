@@ -3,19 +3,28 @@
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
 const {asyncHandler} = require(`../../utils`);
+const auth = require(`../middleware/auth`);
 
 const myRouter = new Router();
 
 // Страница MY
-myRouter.get(`/`, async (req, res, next) => {
-  const articles = await api.getArticles({comments: false});
-  res.render(`my`, {articles});
+
+myRouter.get(`/`, auth, async (req, res, next) => {
+  const {user} = req.session;
+  let articles = [];
+  try {
+    articles = await api.getArticles({comments: false});
+  } catch (e) {
+    next(e);
+  }
+  res.render(`my`, {articles, user});
 });
 
 // Получить все комментарии
-myRouter.get(`/comments`, asyncHandler(async (req, res, next) => {
+myRouter.get(`/comments`, auth, asyncHandler(async (req, res, next) => {
+  const {user} = req.session;
   let articles = await api.getArticles({comments: true});
-  res.render(`comments`, {articles});
+  res.render(`comments`, {articles, user});
 }));
 
 // Удаление статьи

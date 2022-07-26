@@ -6,6 +6,18 @@ block content
       const date = new Date(dateString);
       return date.toLocaleString();
     }
+    const sliceText = (text) => {
+      if(text.length > 100) {
+        return `${text.slice(0, 50)}...`;
+      }
+      return text;
+    }
+    const sliceTitle = (title) => {
+      if(title.length > 20) {
+        return `${title.slice(0, 20)}...`;
+      }
+      return title;
+    }
   main
     section.post
       h1.visually-hidden Пост
@@ -15,7 +27,7 @@ block content
           .post__head
             a.post__backwards.button.button--backwards(href='javascript:history.back()') Назад
             time.post__date(datetime=article.createdAt) #{formatDate(article.createdAt)}
-            h2.post__title.title.title--main #{article.title}
+            h2.post__title.title.title--main #{sliceTitle(article.title)}
             ul.post__themes.themes
               each category in article.categories
                 li.themes__item
@@ -28,7 +40,7 @@ block content
               img(src=`/img/${article.image}` alt=article.title)
           .post__text
             h3 #{article.announce}
-            p #{article.fullText}
+            p #{sliceText(article.fullText)}
       if article.comments
         .post__wrapper.post__wrapper--comments
           section.post__comments.comments
@@ -44,11 +56,22 @@ block content
                       p #{comment.users.firstName} #{comment.users.lastName} •
                       time.comments__date(datetime=comment.createdAt) #{formatDate(comment.createdAt)}
                     p.comments__message #{comment.text}
-            .comments__footer.comments__footer--user
-              form(action=`/articles/${article.id}/comments` method='POST')
-                .comments__avatar.avatar
-                label
-                  textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
-                button.comments__button.button.button--colored(type='submit') Опубликовать
-              +commentErrorMessage(validationMessages)
-        
+            if user
+              .comments__footer.comments__footer--user
+                form(action=`/articles/${article.id}/comments` method='POST')
+                  input(type="hidden" name="_csrf" value=csrfToken)
+                  .comments__avatar.avatar
+                    img(src=`/img/${user.avatar}` alt='аватар пользователя')
+                  label
+                    textarea(rows='1' name='message' placeholder='Присоединиться к обсуждению')
+                  button.comments__button.button.button--colored(type='submit') Опубликовать
+                +commentErrorMessage(validationMessages)
+            else
+              .comments__footer.comments__footer--visitor
+                a.comments__button.button.button--colored(href='/login') Войти
+                .comments__registration
+                  p.text.text--signature
+                    b.title.title--small Регистрация
+                    | Чтобы присоединиться к
+                    |                   переписке
+                    |                   нужно зарегистрироваться

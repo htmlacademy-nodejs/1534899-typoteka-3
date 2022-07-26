@@ -25,6 +25,7 @@ block content
             +insertErrorMessage(validationMessages)
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
+                input(type="hidden" name="_csrf" value=csrfToken)
                 .form__field
                   label
                     input(type='text' name='title' placeholder='Заголовок' value=article.title required='')
@@ -41,7 +42,7 @@ block content
                     .new-publication__checkbox.new-publication__checkbox--auto
                       input(id='checkbox-auto' + index type='checkbox' name='category[]' value=category.id checked=isChecked(category.id, article.categories))
                       label(for='checkbox-auto' + index) #{category.name}
-                  a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+                  a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
@@ -49,6 +50,3 @@ block content
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='10' name='fullText' placeholder='Полный текст публикации') #{article.fullText}
-
-
-                    

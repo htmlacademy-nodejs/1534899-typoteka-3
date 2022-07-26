@@ -3,6 +3,7 @@
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middleware/picture-upload`);
+const auth = require(`../middleware/auth`);
 const csrf = require(`csurf`);
 const mainRouter = new Router();
 const {prepareErrors} = require(`../../utils`);
@@ -10,14 +11,12 @@ const {prepareErrors} = require(`../../utils`);
 const csrfProtection = csrf();
 const ARTICLES_PER_PAGE = 8;
 
-
-// Все категории GET
-mainRouter.get(`/categories`, async (req, res) => {
+mainRouter.get(`/categories`, auth, async (req, res) => {
+  const {user} = req.session;
   const categories = await api.getCategories();
-  res.render(`all-categories`, {categories});
+  res.render(`all-categories`, {categories, user});
 });
 
-// Добавление категории POST
 mainRouter.post(`/categories`, async (req, res) => {
   const {'add-category': nameCategory} = req.body;
   try {
@@ -29,13 +28,13 @@ mainRouter.post(`/categories`, async (req, res) => {
       res.render(`all-categories`, {categories});
     }
   } catch (err) {
+    const {user} = req.session;
     const categories = await api.getCategories();
     const validationMessages = prepareErrors(err);
-    res.render(`all-categories`, {categories, validationMessages});
+    res.render(`all-categories`, {categories, user, validationMessages});
   }
 });
 
-// Изменение или удаление категории POST
 mainRouter.post(`/categories/:id`, async (req, res) => {
   const {action, category} = req.body;
   const {id} = req.params;
@@ -47,20 +46,20 @@ mainRouter.post(`/categories/:id`, async (req, res) => {
     }
     res.redirect(`/categories`);
   } catch (errors) {
+    const {user} = req.session;
     const categories = await api.getCategories();
-    res.render(`all-categories`, {categories});
+    const validationMessages = prepareErrors(errors);
+    res.render(`all-categories`, {categories, user, validationMessages});
   }
 });
 
-//*************************/ Регистрация нового пользователя /**********************************//
-
-mainRouter.get(`/register`, async (req, res) => {
-  res.render(`authorization/signup`);
+mainRouter.get(`/register`, csrfProtection, async (req, res) => {
+  res.render(`authorization/signup`, {csrfToken: req.csrfToken()});
 });
 
-mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
-  const {body, file} = req;
+mainRouter.post(`/register`, upload.single(`avatar`), csrfProtection, async (req, res) => {
 
+  const {body, file} = req;
   const userData = {
     avatar: file ? file.filename : ``,
     firstName: body[`firstname`],
@@ -69,47 +68,28 @@ mainRouter.post(`/register`, upload.single(`avatar`), async (req, res) => {
     password: body[`password`],
     passwordRepeated: body[`repeat-password`]
   };
-
   try {
-    const result = await api.createUser(userData);;
+    const result = await api.createUser(userData);
     res.redirect(`/login`);
   } catch (errors) {
-    
     const validationMessages = prepareErrors(errors);
     res.render(`authorization/signup`, {validationMessages});
   }
 });
 
-//*************************/ Логин пользователя /**********************************//
 
-// Роуты для регистрации и логина
 mainRouter.get(`/login`, csrfProtection, async (req, res) => {
   res.render(`authorization/login`, {csrfToken: req.csrfToken()});
 });
-
-// mainRouter.get(`/login`, csrfProtection, (req, res) => res.render(`login`, {csrfToken: req.csrfToken()}));
-
-// Логин пользователя
-// mainRouter.post(`/login`, async (req, res) => {
-//   const {body} = req;
-  // const userData = {
-  //   email: body[`email`],
-  //   password: body[`password`],
-  // };
-//   await api.auth(userData);
-//   res.redirect(`/`);
-// });
 
 mainRouter.post(`/login`, csrfProtection, async (req, res) => {
   const userData = {
     email: req.body[`email`],
     password: req.body[`password`],
   };
-  console.log('userData', userData);
 
   try {
     const user = await api.auth(userData);
-    console.log('user>>>', user);
     req.session.user = user;
     req.session.save(() => {
       res.redirect(`/`);
@@ -124,10 +104,10 @@ mainRouter.post(`/login`, csrfProtection, async (req, res) => {
 // Logout
 mainRouter.get(`/logout`, (req, res) => {
   delete req.session.user;
-  res.redirect(`/`);
+  res.redirect(`/login`);
 });
 
-// Главная страница, получение статей с комментариями и категориями
+// Main page
 mainRouter.get(`/`, async (req, res) => {
   let {page = 1} = req.query;
   const {user} = req.session;
@@ -153,8 +133,9 @@ mainRouter.get(`/`, async (req, res) => {
   res.render(`main`, {articles, page, totalPages, categories, user, popularArticles, lastComments});
 });
 
-// Страница поиска
+// Search
 mainRouter.get(`/search`, async (req, res, next) => {
+  const {user} = req.session;
   let result = [];
   if (req.query.search) {
     try {
@@ -166,8 +147,10 @@ mainRouter.get(`/search`, async (req, res, next) => {
     }
   }
   res.render(`search`, {
+    colorWrap: true,
     searchQuery: req.query.search,
     result,
+    user
   });
 });
 

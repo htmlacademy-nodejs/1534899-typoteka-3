@@ -8,17 +8,15 @@ class ArticleService {
     this._Article = sequelize.models.Article;
     this._Category = sequelize.models.Category;
     this._User = sequelize.models.User;
-    this._Role = sequelize.models.Role;
     this._Comment = sequelize.models.Comment;
     this._ArticleCategory = sequelize.models.ArticleCategory;
   }
-  /////+++++
+
   async findAll(needComments) {
     const include = [
       Aliase.CATEGORIES,
       {
         model: this._User,
-        as: Aliase.USERS,
         attributes: {
           exclude: [`passwordHash`]
         }
@@ -36,10 +34,10 @@ class ArticleService {
           include,
           order: orderArr,
         });
+
     return article.map((item) => item.get());
   }
 
-  /////+++++
   async findPage({limit, offset}) {
     const {count, rows} = await this._Article.findAndCountAll({
       limit,
@@ -52,7 +50,7 @@ class ArticleService {
     });
     return {count, articles: rows};
   }
-  /////+++++
+
   async popularArticles() {
     const options = {
       subQuery: false,
@@ -80,8 +78,8 @@ class ArticleService {
     const popularActicles = await this._Article.findAll(options);
     return popularActicles.map((item) => item.get());
   }
-  /////-----
-  async findArticlesByCategory(categoryId) {
+
+  async findArticlesByCategory(categoryId, limit, offset) {
     const articlesIdByCategory = await this._ArticleCategory.findAll({
       attributes: [`ArticleId`],
       where: {
@@ -93,6 +91,8 @@ class ArticleService {
     const articlesId = articlesIdByCategory.map((articleIdItem) => articleIdItem.ArticleId);
 
     const {count, rows} = await this._Article.findAndCountAll({
+      limit,
+      offset,
       include: [
         Aliase.CATEGORIES,
         Aliase.COMMENTS,

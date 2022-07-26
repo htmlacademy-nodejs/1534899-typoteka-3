@@ -14,7 +14,6 @@ const {
   CATEGORIES_PATH,
   FULLTEXTS_PATH,
   COMMENTS_PATH,
-  ROLES_PATH,
   DEFAULT_COUNT,
   EXIT_CODES,
   MAX_COMMENTS,
@@ -39,7 +38,6 @@ const readContent = async (filePath) => {
   }
 };
 
-const getRoles = async () => readContent(ROLES_PATH);
 const getCategories = async () => readContent(CATEGORIES_PATH);
 
 
@@ -50,7 +48,6 @@ const getUsers = () => [
     email: `ivanov@example.com`,
     passwordHash: `ghfjgfjgfjgfjgh`,
     avatar: `avatar-1.png`,
-    roleId: 1,
   },
   {
     firstName: `Пётр`,
@@ -58,7 +55,6 @@ const getUsers = () => [
     email: `petrov@example.com`,
     passwordHash: `fdfdjfkdfjdkf`,
     avatar: `avatar-2.png`,
-    roleId: 2,
   },
   {
     firstName: `Сидоров`,
@@ -66,7 +62,6 @@ const getUsers = () => [
     email: `sidorov@example.com`,
     passwordHash: `afsfafasf`,
     avatar: `avatar-3.png`,
-    roleId: 3,
   },
 ];
 
@@ -117,7 +112,6 @@ module.exports = {
     }
 
     const categoriesData = await getCategories();
-    const rolesData = await getRoles();
     const usersData = getUsers();
 
     const articlesData = await generateArticles(countArticle, categoriesData);
@@ -125,7 +119,7 @@ module.exports = {
     try {
       logger.info(`Trying to connect to database...`);
       await sequelize.authenticate();
-      await initDB(sequelize, {articlesData, categoriesData, rolesData, usersData});
+      await initDB(sequelize, {articlesData, categoriesData, usersData});
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);
     }

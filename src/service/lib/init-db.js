@@ -3,14 +3,11 @@
 const defineModels = require(`../models`);
 const Aliase = require(`../models/aliase`);
 
-module.exports = async (sequelize, {articlesData, categoriesData, rolesData, usersData}) => {
-  const {Category, Role, User, Article} = await defineModels(sequelize);
+module.exports = async (sequelize, {articlesData, categoriesData, usersData}) => {
+  const {Category, User, Article} = await defineModels(sequelize);
   await sequelize.sync({force: true});
   const categoryModels = await Category.bulkCreate(
       categoriesData.map((item) => ({name: item}))
-  );
-  await Role.bulkCreate(
-      rolesData.map((item) => ({name: item}))
   );
   let userModels;
   try {

@@ -5,8 +5,6 @@ const ANNOUNCES_PATH = `./data/announces.txt`;
 const CATEGORIES_PATH = `./data/categories.txt`;
 const FULLTEXTS_PATH = `./data/fulltexts.txt`;
 const COMMENTS_PATH = `./data/comments.txt`;
-const ROLES_PATH = `./data/roles.txt`;
-
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -59,7 +57,6 @@ module.exports = {
   CATEGORIES_PATH,
   FULLTEXTS_PATH,
   COMMENTS_PATH,
-  ROLES_PATH,
   DATE,
   USER_ARGV_INDEX,
   DEFAULT_COUNT,

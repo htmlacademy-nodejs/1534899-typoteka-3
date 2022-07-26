@@ -36,7 +36,9 @@ module.exports = (app, service) => {
 
   route.get(`/category/:id`, async (req, res) => {
     const {id} = req.params;
-    const {count, articles} = await service.findArticlesByCategory(id);
+    const {limit, offset} = req.query;
+
+    const {count, articles} = await service.findArticlesByCategory(id, limit, offset);
 
     res.status(HttpCode.OK)
       .json({
@@ -48,9 +50,9 @@ module.exports = (app, service) => {
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
     const {comments} = req.query;
+    const needComments = comments === 'false' ? false : true;
 
-    const article = await service.findOne(articleId, Boolean(comments));
-
+    const article = await service.findOne(articleId, needComments);
 
     if (!article) {
       logger.error(`Not found with ${articleId}`);
@@ -70,7 +72,7 @@ module.exports = (app, service) => {
 
   route.put(`/:articleId`, [articleValidator, RouteParamsValidator], async (req, res) => {
     const {articleId} = req.params;
-    const existsArticle = await service.findOne(articleId);
+    const existsArticle = await service.findOne(articleId, false);
 
     if (!existsArticle) {
       logger.error(`Not found with ${articleId}`);

@@ -12,7 +12,6 @@ const initDB = require(`../lib/init-db`);
 
 const {
   CATEGORIES_PATH,
-  ROLES_PATH,
 } = require(`../constants`);
 
 const mockData = [
@@ -159,7 +158,6 @@ const readContent = async (filePath) => {
 };
 
 const getCategories = async () => readContent(CATEGORIES_PATH);
-const getRoles = async () => readContent(ROLES_PATH);
 
 const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 const app = express();
@@ -173,7 +171,6 @@ beforeAll(async () => {
       email: `ivanov@example.com`,
       passwordHash: `ghfjgfjgfjgfjgh`,
       avatar: `avatar-1.png`,
-      roleId: 1,
     },
     {
       firstName: `Пётр`,
@@ -181,7 +178,6 @@ beforeAll(async () => {
       email: `petrov@example.com`,
       passwordHash: `fdfdjfkdfjdkf`,
       avatar: `avatar-2.png`,
-      roleId: 2,
     },
     {
       firstName: `Сидоров`,
@@ -189,13 +185,11 @@ beforeAll(async () => {
       email: `sidorov@example.com`,
       passwordHash: `afsfafasf`,
       avatar: `avatar-3.png`,
-      roleId: 3,
     },
   ];
-  const rolesData = await getRoles();
   const categoriesData = await getCategories();
 
-  await initDB(mockDB, {articlesData: mockData, categoriesData, rolesData, usersData: users});
+  await initDB(mockDB, {articlesData: mockData, categoriesData, usersData: users});
 
   search(app, new SearchService(mockDB));
 });
