@@ -1,6 +1,5 @@
 'use strict';
 
-const defineRole = require(`./role`);
 const defineComment = require(`./comment`);
 const defineArticle = require(`./article`);
 const defineCategory = require(`./category`);
@@ -14,12 +13,8 @@ const define = (sequelize) => {
   const Category = defineCategory(sequelize);
   const Comment = defineComment(sequelize);
   const Article = defineArticle(sequelize);
-  const Role = defineRole(sequelize);
   const User = defineUser(sequelize);
   ArticleCategory.init({}, {sequelize, timestamps: false, modelName: `ArticleCategory`, tableName: `article_categories`});
-
-  Role.hasMany(User, {as: Aliase.USERS, foreignKey: `roleId`, onDelete: `cascade`});
-  User.belongsTo(Role, {as: `roles`, foreignKey: `roleId`});
 
   User.hasMany(Article, {as: Aliase.ARTICLES, foreignKey: `userId`, onDelete: `cascade`});
   Article.belongsTo(User, {foreignKey: `userId`});
@@ -34,7 +29,7 @@ const define = (sequelize) => {
   Category.belongsToMany(Article, {through: ArticleCategory, as: Aliase.ARTICLES});
   Category.hasMany(ArticleCategory, {as: Aliase.ARTICLE_CATEGORIES});
 
-  return {Article, Category, Comment, Role, User, ArticleCategory};
+  return {Article, Category, Comment, User, ArticleCategory};
 };
 
 module.exports = define;

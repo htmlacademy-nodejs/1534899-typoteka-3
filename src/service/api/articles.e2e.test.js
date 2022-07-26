@@ -8,7 +8,8 @@ const initDB = require(`../lib/init-db`);
 
 const articles = require(`./articles`);
 const ArticleService = require(`../data-service/article`);
-const {HttpCode, CATEGORIES_PATH, ROLES_PATH} = require(`../constants`);
+const {HttpCode, CATEGORIES_PATH} = require(`../constants`);
+const passwordUtils = require(`../lib/password`);
 
 const mockData = [
   {
@@ -154,7 +155,6 @@ const readContent = async (filePath) => {
 };
 
 const getCategories = async () => readContent(CATEGORIES_PATH);
-const getRoles = async () => readContent(ROLES_PATH);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -163,32 +163,28 @@ const createAPI = async () => {
       firstName: `Иван`,
       lastName: `Иванов`,
       email: `ivanov@example.com`,
-      passwordHash: `ghfjgfjgfjgfjgh`,
+      passwordHash: await passwordUtils.hash(`ivanov`),
       avatar: `avatar-1.png`,
-      roleId: 1,
     },
     {
       firstName: `Пётр`,
       lastName: `Петров`,
       email: `petrov@example.com`,
-      passwordHash: `fdfdjfkdfjdkf`,
+      passwordHash: await passwordUtils.hash(`petrov`),
       avatar: `avatar-2.png`,
-      roleId: 2,
     },
     {
       firstName: `Сидоров`,
       lastName: `Сидр`,
       email: `sidorov@example.com`,
-      passwordHash: `afsfafasf`,
+      passwordHash: await passwordUtils.hash(`sidorov`),
       avatar: `avatar-3.png`,
-      roleId: 3,
     },
   ];
 
-  const rolesData = await getRoles();
   const categoriesData = await getCategories();
 
-  await initDB(mockDB, {articlesData: mockData, categoriesData, rolesData, usersData: users});
+  await initDB(mockDB, {articlesData: mockData, categoriesData, usersData: users});
   const app = express();
   app.use(express.json());
   articles(app, new ArticleService(mockDB));
@@ -209,16 +205,145 @@ describe(`API returns all articles`, () => {
   test(`Returns a list of 5 articles`, () => expect(response.body.length).toBe(5));
 });
 
+describe(`API creates an article if data is valid`, () => {
+  const newArticle = {
+    userId: 1,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    createDate: `2020-10-21`,
+    categories: [`1`, `2`],
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    image: ``,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+  };
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .post(`/articles`)
+      .send(newArticle);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+
+  test(`Articles count is changed`, () => request(app)
+    .get(`/articles`)
+    .expect((res) => expect(res.body.length).toBe(6))
+  );
+
+});
+
+describe(`API refuses to create an article if data is invalid`, () => {
+  const newArticle = {
+    title: `Валидный заголовок`,
+    announce: `Валидный анонс`,
+    category: `Железо`,
+    fullText: `Полный текст`,
+    userId: 1
+  };
+
+  test(`Without any required property response code is 400`, async () => {
+    for (const key of Object.keys(newArticle)) {
+      const badArticle = {...newArticle};
+      delete badArticle[key];
+      const app = await createAPI();
+      await request(app).post(`/articles`).send(badArticle).expect(HttpCode.BAD_REQUEST);
+    }
+  });
+});
+
+describe(`API changes existent article`, () => {
+  const newArticle = {
+    userId: 1,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    createDate: `2020-10-21`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    image: ``,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+  };
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app)
+      .put(`/articles/2`)
+      .send(newArticle);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Post is really changed`, () => request(app)
+    .get(`/articles/2`)
+    .expect((res) => expect(res.body.title).toBe(`Обзор новейшего смартфона Обзор новейшего смартфона`))
+  );
+});
+
+test(`API returns status code 404 when trying to change non-existent article`, async () => {
+  const app = await createAPI();
+
+  const validPost = {
+    userId: 4,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    createDate: `2020-10-21`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    image: ``,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
+  };
+
+  return await request(app)
+    .put(`/articles/20`)
+    .send(validPost)
+    .expect(HttpCode.NOT_FOUND);
+});
+
+test(`API returns status code 404 when trying to change an article with invalid data`, async () => {
+  const invalidArticle = {
+    title: `Валидный заголовок`,
+    category: `Железо`,
+    fullText: `Полный текст`,
+    userId: 1
+  };
+
+  const app = await createAPI();
+
+  await request(app).put(`/articles/1`).send(invalidArticle).expect(HttpCode.BAD_REQUEST);
+});
+
+describe(`API correctly deletes an article`, () => {
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).delete(`/articles/1`);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Articles count is 4 now`, async () => {
+    await request(app).get(`/articles`).expect((res) => expect(res.body.length).toBe(4));
+  });
+});
+
+test(`API returns to delete non-existent article`, async () => {
+  const app = await createAPI();
+  await request(app).delete(`/articles/89`).expect(HttpCode.NOT_FOUND);
+});
+
 test(`When field type is wrong response code is 400`, async () => {
   const newArticle = {
-    createdDate: `2022-07-07`,
-    title: `Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности`,
-    photo: ``,
-    upload: ``,
-    announce: `Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности`,
-    fullText: `Как собрать камни бесконечности, Как собрать камни бесконечности. Как собрать камни бесконечности. Как собрать камни бесконечности.Как собрать камни бесконечности.`,
-    categories: [`5`, `2`, `3`, `4`],
-    userId: 1
+    userId: true,
+    title: `Обзор новейшего смартфона Обзор новейшего смартфона`,
+    createDate: `2020-10-21`,
+    categories: [`1`, `2`, `3`, `7`, `8`, `9`],
+    announce: `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
+    image: ``,
+    fullText: `Простые ежедневные упражнения помогут достичь успеха. Программировать не настолько сложно, как об этом говорят. Ёлки — это не просто красивое дерево. Это прочная древесина.`,
   };
   const app = await createAPI();
 

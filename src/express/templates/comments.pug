@@ -10,17 +10,18 @@ block content
     section.main-page__publication.publication
       h1.publication__title Комментарии
       ul.publication__list
-        //- each article in articles
-        //-   each comment in article.comments
-        //-     li.publication__list-item
-        //-       .publication__header
-                //- img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
-                //- b.publication__list-name #{comment.users.name} #{comment.users.surname}
-                //- time.publication__item-time(datetime=comment.createdAt) #{formatDate(comment.createdAt)}
-              //- a.publication__item-text(href='#')
-              //-   | #{comment.text}
-              //- p.publication__text-strong
-              //-   | #{article.title}
-              //- form(action=`/my/comments/${comment.id}` method='POST')
-              //-   button.publication__button.button.button--close-item(type='submit')
-              //-     span.visually-hidden Удалить комментарий
+        each article in articles
+          each comment in article.comments
+            p.publication__text-strong
+            li.publication__list-item
+              .publication__header
+                img.publication__list-image(src=`/img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+                b.publication__list-name #{comment.users.firstName} #{comment.users.lastName}
+                time.publication__item-time(datetime=comment.createdAt) #{formatDate(comment.createdAt)}
+              a.publication__item-text(href='#')
+                | #{comment.text}
+              p.publication__text-strong
+                | #{article.title}
+              form(action=`/my/comments/${comment.id}` method='POST')
+                button.publication__button.button.button--close-item(type='submit')
+                  span.visually-hidden Удалить комментарий

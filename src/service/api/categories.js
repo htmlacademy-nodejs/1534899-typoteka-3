@@ -18,7 +18,7 @@ module.exports = (app, service) => {
       .json(categories);
   });
 
-  route.put(`/:categoryId`, RouteParamsValidator, async (req, res) => {
+  route.put(`/:categoryId`, categoryValidator, async (req, res) => {
     const {categoryId} = req.params;
     const categoryName = req.body.name;
 

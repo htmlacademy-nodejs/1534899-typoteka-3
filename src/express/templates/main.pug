@@ -8,9 +8,15 @@ block content
     }
     const sliceText = (announce) => {
       if(announce.length > 100) {
-        return `${announce.slice(0, 100)}...`;
+        return `${announce.slice(0, 50)}...`;
       }
       return announce;
+    }
+    const sliceArticleTitle = (title) => {
+      if(title.length > 20) {
+        return `${title.slice(0, 20)}...`;
+      }
+      return title;
     }
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
@@ -40,8 +46,8 @@ block content
           ul.last__list
             each comment in lastComments
               li.last__list-item
-                //- img.last__list-image(src=`img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
-                b.last__list-name #{comment.users.name} #{comment.users.surname}
+                img.last__list-image(src=`img/${comment.users.avatar}` width='20' height='20' alt='Аватар пользователя')
+                b.last__list-name #{comment.users.firstName} #{comment.users.lastName}
                 a.last__list-link(href=`/articles/${comment.articleId}`)=sliceText(comment.text)
         else
           p(class="hot__empty") Здесь пока ничего нет...
@@ -60,8 +66,8 @@ block content
                   img.preview__background-image(src=`img/${article.image}` width='460' height='240' alt=article.title)
               time.preview__time(datetime=article.createdAt) #{formatDate(article.createdAt)}
               h3.preview__name
-                a.preview__name-link(href='/articles/' + article.id) #{article.title}
-              p.preview__text #{article.announce}
+                a.preview__name-link(href='/articles/' + article.id) #{sliceArticleTitle(article.title)}
+              p.preview__text #{sliceText(article.announce)}
               a.preview__comment(href='/articles/' + article.id)
                 | Комментарии
                 span.preview__cloud
@@ -70,4 +76,3 @@ block content
         h2 Здесь пока пусто!
     .preview__toggle-wrapper
       +pagination(page, totalPages, 2, `?`)
-

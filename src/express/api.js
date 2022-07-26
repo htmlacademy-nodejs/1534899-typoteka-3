@@ -52,12 +52,13 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
   // Получить статью по одной категории
-  getArticlesByCategory({id}) {
-    return this._load(`/articles/category/${id}`);
+  getArticlesByCategory({id, limit, offset}) {
+    return this._load(`/articles/category/${id}`, {params: {limit, offset}});
   }
+
   // Получить статью по ID
-  getArticle(id, {comments}) {
-    return this._load(`/articles/${id}`, {params: {comments: false}});
+  getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
   }
   // Создать новую статью
   createArticle(data) {
@@ -118,8 +119,6 @@ class API {
   }
 
   auth(data) {
-    console.log('>>>>data', data);
-
     return this._load(`/user/auth`, {
       method: `POST`,
       data

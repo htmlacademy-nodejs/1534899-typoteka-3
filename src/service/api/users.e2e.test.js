@@ -8,7 +8,8 @@ const initDB = require(`../lib/init-db`);
 
 const usersApi = require(`./users`);
 const UserService = require(`../data-service/user`);
-const {HttpCode, CATEGORIES_PATH, ROLES_PATH} = require(`../constants`);
+const {HttpCode, CATEGORIES_PATH} = require(`../constants`);
+const passwordUtils = require(`../lib/password`);
 
 const mockData = [
   {
@@ -154,7 +155,6 @@ const readContent = async (filePath) => {
 };
 
 const getCategories = async () => readContent(CATEGORIES_PATH);
-const getRoles = async () => readContent(ROLES_PATH);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -163,17 +163,15 @@ const createAPI = async () => {
       firstName: `Иван`,
       lastName: `Иванов`,
       email: `ivanov@example.com`,
-      passwordHash: `ghfjgfjgfjgfjgh`,
+      passwordHash: await passwordUtils.hash(`ivanov`),
       avatar: `avatar-1.png`,
-      roleId: 1,
     },
     {
       firstName: `Пётр`,
       lastName: `Петров`,
       email: `petrov@example.com`,
-      passwordHash: `fdfdjfkdfjdkf`,
+      passwordHash: await passwordUtils.hash(`petrov`),
       avatar: `avatar-2.png`,
-      roleId: 2,
     },
     {
       firstName: `Сидоров`,
@@ -181,14 +179,12 @@ const createAPI = async () => {
       email: `sidorov@example.com`,
       passwordHash: `afsfafasf`,
       avatar: `avatar-3.png`,
-      roleId: 3,
     },
   ];
 
-  const rolesData = await getRoles();
   const categoriesData = await getCategories();
 
-  await initDB(mockDB, {articlesData: mockData, categoriesData, rolesData, usersData: users});
+  await initDB(mockDB, {articlesData: mockData, categoriesData, usersData: users});
   const app = express();
   app.use(express.json());
   usersApi(app, new UserService(mockDB));
@@ -288,7 +284,7 @@ describe(`API creates user if data is valid`, () => {
       });
 
   });
-  ///////////
+  
   describe(`API authenticate user if data is valid`, () => {
     const validAuthData = {
       email: `ivanov@example.com`,
@@ -306,7 +302,7 @@ describe(`API creates user if data is valid`, () => {
   
     test(`Status code is 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
   
-    test(`User name is Иван`, () => expect(response.body.name).toBe(`Иван`));
+    test(`User name is Иван`, () => expect(response.body.firstName).toBe(`Иван`));
   });
   
   describe(`API refuses to authenticate user if data is invalid`, () => {
