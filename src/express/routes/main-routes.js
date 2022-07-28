@@ -3,55 +3,12 @@
 const {Router} = require(`express`);
 const api = require(`../api`).getAPI();
 const upload = require(`../middleware/picture-upload`);
-const auth = require(`../middleware/auth`);
 const csrf = require(`csurf`);
 const mainRouter = new Router();
 const {prepareErrors} = require(`../../utils`);
 
 const csrfProtection = csrf();
 const ARTICLES_PER_PAGE = 8;
-
-mainRouter.get(`/categories`, auth, async (req, res) => {
-  const {user} = req.session;
-  const categories = await api.getCategories();
-  res.render(`all-categories`, {categories, user});
-});
-
-mainRouter.post(`/categories`, async (req, res) => {
-  const {'add-category': nameCategory} = req.body;
-  try {
-    const result = await api.addCategory({name: nameCategory});
-    if (result) {
-      res.redirect(`/categories`);
-    } else {
-      const categories = await api.getCategories();
-      res.render(`all-categories`, {categories});
-    }
-  } catch (err) {
-    const {user} = req.session;
-    const categories = await api.getCategories();
-    const validationMessages = prepareErrors(err);
-    res.render(`all-categories`, {categories, user, validationMessages});
-  }
-});
-
-mainRouter.post(`/categories/:id`, async (req, res) => {
-  const {action, category} = req.body;
-  const {id} = req.params;
-  try {
-    if (action === `edit`) {
-      await api.editCategory({name: category}, id);
-    } else {
-      await api.deleteCategory(id);
-    }
-    res.redirect(`/categories`);
-  } catch (errors) {
-    const {user} = req.session;
-    const categories = await api.getCategories();
-    const validationMessages = prepareErrors(errors);
-    res.render(`all-categories`, {categories, user, validationMessages});
-  }
-});
 
 mainRouter.get(`/register`, csrfProtection, async (req, res) => {
   res.render(`authorization/signup`, {csrfToken: req.csrfToken()});
@@ -69,7 +26,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), csrfProtection, async (req
     passwordRepeated: body[`repeat-password`]
   };
   try {
-    const result = await api.createUser(userData);
+    await api.createUser(userData);
     res.redirect(`/login`);
   } catch (errors) {
     const validationMessages = prepareErrors(errors);
@@ -123,7 +80,7 @@ mainRouter.get(`/`, async (req, res) => {
     lastComments
   ] = await Promise.all([
     api.getArticles({limit, offset, comments: true}),
-    api.getCategories(),
+    api.getCategories(true),
     api.getPopularArticles(),
     api.getLastComments()
   ]);

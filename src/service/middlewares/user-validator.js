@@ -12,6 +12,8 @@ const ErrorRegisterMessage = {
   PASSWORD_REPEATED: `Пароли не совпадают`,
   REQUIRED_LASTNAME: `Поле фамилия не заполнено`,
   REQUIRED_FIRSTNAME: `Поле имя не заполнено`,
+  REQUIRED_EMAIL: `Поле эл.почта не заполнено`,
+  REQUIRED_PASSWORD: `Поле пароль не заполнено`,
 };
 
 const schema = Joi.object({
@@ -25,10 +27,12 @@ const schema = Joi.object({
     'string.empty': ErrorRegisterMessage.REQUIRED_LASTNAME
   }),
   email: Joi.string().email().required().messages({
-    'string.email': ErrorRegisterMessage.EMAIL
+    'string.email': ErrorRegisterMessage.EMAIL,
+    'string.empty': ErrorRegisterMessage.REQUIRED_EMAIL
   }),
   password: Joi.string().min(6).required().messages({
-    'string.min': ErrorRegisterMessage.PASSWORD
+    'string.min': ErrorRegisterMessage.PASSWORD,
+    'string.empty': ErrorRegisterMessage.REQUIRED_PASSWORD
   }),
   passwordRepeated: Joi.string().required().valid(Joi.ref(`password`)).required().messages({
     'any.only': ErrorRegisterMessage.PASSWORD_REPEATED

@@ -10,7 +10,7 @@ block content
     section
       .popup.popup--new-publication.popup--anti
         .new-publication
-          form(method='POST' enctype='multipart/form-data' action='/articles/add/new')
+          form(method='POST' enctype='multipart/form-data' action='/articles/add')
             .new-publication__header
               h1 Новая публикация
               .new-publication__date-form
@@ -43,7 +43,7 @@ block content
                     .new-publication__checkbox.new-publication__checkbox--auto
                       input(type='checkbox' name='category[]' value=category.id id='checkbox-auto-' + index)
                       label(for='checkbox-auto-' + index) #{category.name}
-                  a.new-publication__form-link.button.button--transparent(href='/categories') Добавить категорию
+                  a.new-publication__form-link.button.button--transparent(href='/my/categories') Добавить категорию
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label

@@ -14,19 +14,19 @@ block content
             input(type="hidden" name="_csrf" value=csrfToken)
             .form__field
               label
-                input(type='email' name='email' placeholder='Электронная почта' required='')
+                input(type='email' name='email' placeholder='Электронная почта')
             .form__field
               label
-                input(type='text' name='firstname' placeholder='Имя' required='')
+                input(type='text' name='firstname' placeholder='Имя')
             .form__field
               label
-                input(type='text' name='lastname' placeholder='Фамилия' required='')
+                input(type='text' name='lastname' placeholder='Фамилия')
             .form__field
               label
-                input(type='password' name='password' placeholder='Пароль' required='')
+                input(type='password' name='password' placeholder='Пароль')
             .form__field
               label
-                input(type='password' name='repeat-password' placeholder='Повтор пароля' required='')
+                input(type='password' name='repeat-password' placeholder='Повтор пароля')
             +registerErrorMessage(validationMessages)
             .form__image-loader
               a.form__avatar.avatar

@@ -44,7 +44,10 @@ block content
       if article.comments
         .post__wrapper.post__wrapper--comments
           section.post__comments.comments
-            h2.comments__title.title.title--middle Комментарии
+            if article.comments.length
+              h2.comments__title.title.title--middle Комментарии
+            else
+              h2.comments__title.title.title--middle Комментарии отсутствуют
             ul.comments__list
               each comment in article.comments
                 li.comments__comment
