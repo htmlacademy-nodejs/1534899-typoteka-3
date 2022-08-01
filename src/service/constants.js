@@ -3,7 +3,7 @@
 const TITLES_PATH = `./data/titles.txt`;
 const ANNOUNCES_PATH = `./data/announces.txt`;
 const CATEGORIES_PATH = `./data/categories.txt`;
-const FULLTEXTS_PATH = `./data/fulltexts.txt`;
+const FULL_TEXTS_PATH = `./data/fulltexts.txt`;
 const COMMENTS_PATH = `./data/comments.txt`;
 
 const DEFAULT_COUNT = 1;
@@ -55,7 +55,7 @@ module.exports = {
   TITLES_PATH,
   ANNOUNCES_PATH,
   CATEGORIES_PATH,
-  FULLTEXTS_PATH,
+  FULL_TEXTS_PATH,
   COMMENTS_PATH,
   DATE,
   USER_ARGV_INDEX,
