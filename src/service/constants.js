@@ -3,7 +3,7 @@
 const TITLES_PATH = `./data/titles.txt`;
 const ANNOUNCES_PATH = `./data/announces.txt`;
 const CATEGORIES_PATH = `./data/categories.txt`;
-const FULLTEXTS_PATH = `./data/fulltexts.txt`;
+const FULL_TEXTS_PATH = `./data/fulltexts.txt`;
 const COMMENTS_PATH = `./data/comments.txt`;
 
 const DEFAULT_COUNT = 1;
@@ -50,12 +50,14 @@ const MAX_ID_LENGTH = 6;
 const MAX_COMMENTS = 4;
 const API_PREFIX = `/api`;
 
+const STRING_LENGTH = 255;
+
 module.exports = {
   DEFAULT_PORT,
   TITLES_PATH,
   ANNOUNCES_PATH,
   CATEGORIES_PATH,
-  FULLTEXTS_PATH,
+  FULL_TEXTS_PATH,
   COMMENTS_PATH,
   DATE,
   USER_ARGV_INDEX,
@@ -69,5 +71,6 @@ module.exports = {
   MAX_COMMENTS,
   API_PREFIX,
   Env,
+  STRING_LENGTH,
 };
 

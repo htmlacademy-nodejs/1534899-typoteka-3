@@ -50,7 +50,7 @@ module.exports = (app, service) => {
   route.get(`/:articleId`, async (req, res) => {
     const {articleId} = req.params;
     const {comments} = req.query;
-    const needComments = comments === 'false' ? false : true;
+    const needComments = comments !== 'false';
 
     const article = await service.findOne(articleId, needComments);
 
