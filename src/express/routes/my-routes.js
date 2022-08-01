@@ -21,21 +21,21 @@ myRouter.get(`/`, auth, async (req, res, next) => {
 });
 
 // Получить все комментарии
-myRouter.get(`/comments`, auth, asyncHandler(async (req, res, next) => {
+myRouter.get(`/comments`, auth, asyncHandler(async (req, res, _next) => {
   const {user} = req.session;
   let articles = await api.getArticles({comments: true});
   res.render(`comments`, {articles, user});
 }));
 
 // Удаление статьи
-myRouter.post(`/:id`, asyncHandler((req, res, next) => {
+myRouter.post(`/:id`, asyncHandler((req, res, _next) => {
   const {id} = req.params;
   api.removeArticle(id);
   res.redirect(`/my`);
 }));
 
 // Удаление коммента
-myRouter.post(`/comments/:id`, asyncHandler(async (req, res, next) => {
+myRouter.post(`/comments/:id`, asyncHandler(async (req, res, _next) => {
   const {id} = req.params;
   await api.removeComments(id);
   res.redirect(`/my/comments`);

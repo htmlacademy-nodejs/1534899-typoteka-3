@@ -1,6 +1,7 @@
 "use strict";
 
 const {DataTypes, Model} = require(`sequelize`);
+const {STRING_LENGTH} = require(`../constants`);
 
 class Category extends Model {}
 
@@ -9,7 +10,7 @@ const defineCategory = (sequelize) =>
       {
         name: {
           // eslint-disable-next-line new-cap
-          type: DataTypes.STRING(255),
+          type: DataTypes.STRING(STRING_LENGTH),
           allowNull: false,
         },
       },

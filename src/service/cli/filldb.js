@@ -12,7 +12,7 @@ const {
   TITLES_PATH,
   ANNOUNCES_PATH,
   CATEGORIES_PATH,
-  FULLTEXTS_PATH,
+  FULL_TEXTS_PATH,
   COMMENTS_PATH,
   DEFAULT_COUNT,
   EXIT_CODES,
@@ -81,7 +81,7 @@ const getRandomSubarray = (items) => {
 
 const generateArticles = async (count, categoriesData) => {
   const titles = await readContent(TITLES_PATH);
-  const fullTexts = await readContent(FULLTEXTS_PATH);
+  const fullTexts = await readContent(FULL_TEXTS_PATH);
   const announces = await readContent(ANNOUNCES_PATH);
   const commentsData = await readContent(COMMENTS_PATH);
   const usersData = await getUsers();

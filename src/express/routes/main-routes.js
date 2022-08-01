@@ -69,7 +69,7 @@ mainRouter.post(`/register`, upload.single(`avatar`), csrfProtection, async (req
     passwordRepeated: body[`repeat-password`]
   };
   try {
-    const result = await api.createUser(userData);
+    await api.createUser(userData);
     res.redirect(`/login`);
   } catch (errors) {
     const validationMessages = prepareErrors(errors);
