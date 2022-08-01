@@ -6,7 +6,7 @@ const {getLogger} = require(`../lib/logger`);
 const logger = getLogger({name: `api`});
 const articleExist = require(`../middlewares/article-exists`);
 const commentValidator = require(`../middlewares/comment-validator`);
-const RouteParamsValidator = require(`../middlewares/route-params-validator`);
+const routeParamsValidator = require(`../middlewares/route-params-validator`);
 
 module.exports = (app, articleService, commentService) => {
   const route = new Router();
@@ -25,7 +25,7 @@ module.exports = (app, articleService, commentService) => {
       .json(comments);
   });
 
-  route.delete(`/comments/:commentId`, RouteParamsValidator, async (req, res) => {
+  route.delete(`/comments/:commentId`, routeParamsValidator, async (req, res) => {
     const {commentId} = req.params;
     const deletedComment = await commentService.drop(commentId);
 

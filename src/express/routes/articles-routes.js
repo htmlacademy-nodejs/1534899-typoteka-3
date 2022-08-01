@@ -12,6 +12,48 @@ const csrfProtection = csrf();
 
 const OFFERS_PER_PAGE = 8;
 
+articlesRouter.get(`/add`, auth, csrfProtection, async (req, res, next) => {
+  const {user} = req.session;
+  try {
+    const categories = await api.getCategories();
+    res.render(`post-new`, {user, categories, csrfToken: req.csrfToken()});
+  } catch (e) {
+    next(e);
+  }
+});
+
+articlesRouter.post(`/add`, upload.single(`upload`), async (req, res, next) => {
+  const {user} = req.session;
+  const {body, file} = req;
+  try {
+    const articleData = {
+      userId: user.id,
+      title: body.title,
+      createDate: body.createdAt,
+      categories: body.category,
+      announce: body.announce,
+      image: file ? file.filename : ``,
+      fullText: body.fullText
+    };
+    const result = await api.createArticle(articleData);
+
+    if (result) {
+      res.redirect(`/my`);
+    } else {
+      const categories = await api.getCategories();
+      res.render(`post-new`, {categories});
+    }
+  } catch (e) {
+    const validationMessages = prepareErrors(e);
+    try {
+      const categories = await api.getCategories();
+      res.render(`post-new`, {user, categories, validationMessages});
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
 articlesRouter.get(`/category/:id`, async (req, res) => {
   const {id} = req.params;
   let {page = 1} = req.query;
@@ -38,49 +80,6 @@ articlesRouter.get(`/:id`, csrfProtection, async (req, res) => {
   res.render(`post`, {article, user, csrfToken: req.csrfToken()});
 }
 );
-
-articlesRouter.get(`/add/new`, auth, csrfProtection, async (req, res, next) => {
-  const {user} = req.session;
-  try {
-    const categories = await api.getCategories();
-    res.render(`post-new`, {user, categories, csrfToken: req.csrfToken()});
-  } catch (e) {
-    next(e);
-  }
-});
-
-articlesRouter.post(`/add/new`, upload.single(`upload`), async (req, res, next) => {
-  const {user} = req.session;
-  const {body, file} = req;
-  try {
-    const articleData = {
-      userId: user.id,
-      title: body.title,
-      createDate: body.createdAt,
-      categories: body.category,
-      announce: body.announce,
-      image: file ? file.filename : ``,
-      fullText: body.fullText
-    };
-    console.log(`>>>>>>>`, articleData);
-    const result = await api.createArticle(articleData);
-
-    if (result) {
-      res.redirect(`/my`);
-    } else {
-      const categories = await api.getCategories();
-      res.render(`post-new`, {categories});
-    }
-  } catch (e) {
-    const validationMessages = prepareErrors(e);
-    try {
-      const categories = await api.getCategories();
-      res.render(`post-new`, {user, categories, validationMessages});
-    } catch (err) {
-      next(err);
-    }
-  }
-});
 
 articlesRouter.get(`/edit/:id`, auth, csrfProtection, async (req, res, next) => {
   const {user} = req.session;
