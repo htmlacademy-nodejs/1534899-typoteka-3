@@ -51,8 +51,6 @@ const MAX_COMMENTS = 4;
 const API_PREFIX = `/api`;
 const STRING_LENGTH = 255;
 
-const STRING_LENGTH = 255;
-
 module.exports = {
   DEFAULT_PORT,
   TITLES_PATH,
