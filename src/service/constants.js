@@ -69,7 +69,7 @@ module.exports = {
   MAX_ID_LENGTH,
   MAX_COMMENTS,
   API_PREFIX,
-  Env,
   STRING_LENGTH,
+  Env,
 };
 
