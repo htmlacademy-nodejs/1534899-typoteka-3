@@ -39,8 +39,8 @@ const formatDate = (date) => {
 
 const asyncHandler = (fn) => (...args) => Promise.resolve(fn(...args)).catch(args[2]);
 
-const prepareErrors = (errors) => {
-  return errors.response.data.split(`\n`);
+const prepareErrors = (errs) => {
+  return errs.response.data.split(`\n`);
 };
 
 module.exports = {

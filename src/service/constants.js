@@ -49,6 +49,7 @@ const Env = {
 const MAX_ID_LENGTH = 6;
 const MAX_COMMENTS = 4;
 const API_PREFIX = `/api`;
+const STRING_LENGTH = 255;
 
 const STRING_LENGTH = 255;
 
